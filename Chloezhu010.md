@@ -41,7 +41,9 @@ timezone: UTC+1
 - Finished Portal Summit discussion notes: https://hackmd.io/DWsDCFooT-u7skmgAb-uSA?view
 
 ### 2025.03.15
-- Watched Ben Edgingon's talk on Gasper: https://www.youtube.com/watch?v=cOivWPEBEMo&t=346s
+#### Ben Edgingon's talk on Gasper
+- Video link: https://www.youtube.com/watch?v=cOivWPEBEMo&t=346s
+- Slides link: https://docs.google.com/presentation/d/1mSn8JUfY88HvcCauLBkKRuy3f6YFlV9VcJptav0Ef24/edit?usp=sharing
 - Notes
     - Recap 
         - The problem
