@@ -26,6 +26,7 @@ timezone: UTC+1
 本周参与 Portal Summit，主要针对轻客户端及与执行层客户端 integrate 的讨论，笔记整理中
 - 讨论主题包括
    - Portal Network 深入介绍
+   - 执行层客户端集成 Portal 进展
    - Portal State Network 研发进展介绍
    - Discv5 协议改进讨论
    - EIP 4444 执行层客户端实现进展
@@ -34,5 +35,9 @@ timezone: UTC+1
     - Portal network deep dive by Piper：https://docs.google.com/presentation/d/16lscCmWZfbxDXgdubV4alRjqnEGczFc2KAsPXgbvqCs/edit#slide=id.gf912b6efc8_0_95
 
 ### 2025.03.13
+- Update Portal Summit discussion notes: https://hackmd.io/DWsDCFooT-u7skmgAb-uSA?view
+
+### 2025.03.14
+- Finished Portal Summit discussion notes: https://hackmd.io/DWsDCFooT-u7skmgAb-uSA?view
 
 <!-- Content_END -->

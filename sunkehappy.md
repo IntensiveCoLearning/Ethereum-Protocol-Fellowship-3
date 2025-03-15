@@ -157,5 +157,14 @@ Holesky testnet（2023.9.28上线）
 #### Q&A
 因为EVM的测试需要Gas，那Gas本身要是有bug咋办？后面我们会让测试不依赖Gas
 
+### 2025.03.14
+
+#### 以太坊的roadmap
+主要是5个方面：
+1. Merge。从 PoW 转向更节能的权益证明（PoS），通过beacon chain来实现。
+2. Surge。聚焦于扩展网络容量，主要目标是通过分片技术（sharding）和其他扩容方案提升吞吐量。
+3. Verge：目标是提升效率，比如简化验证，优化数据可用性和网络效率，减少数据冗余，提高节点运行效率。从Merkle tree换成了 Verkle tree。同时也支持Zero Knowledge。
+4. Purge：致力于清理不必要的数据和状态，使网络更轻量化、运行更高效。
+5. Splurge：作为最后的润色阶段，对整个系统做最后的优化和用户体验改进，确保网络在高负载下依然流畅稳定。
 
 <!-- Content_END -->

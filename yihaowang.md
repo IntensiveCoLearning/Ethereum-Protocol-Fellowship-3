@@ -127,5 +127,23 @@ Execution Layer(執行層)和Consensus Layer(共識層)共同合作來處理交�
       - 以太坊 PoS 使用 Casper FFG（Finality Gadget），確保區塊不會被回滾。
       - 當一個區塊被「兩次 Checkpoint 確認」（約 12.8 分鐘），它就會被視為最終確定，無法被更改
    3. 用戶可以查詢區塊瀏覽器來確認交易成功
-      
+
+### 2025.03.15
+#### Ethereum Testing and Security
+1. Execution Layer Testing
+   - EVM testing
+     - State Testing: 驗證以太坊虛擬機（EVM）在執行智能合約時的狀態變化，確保狀態轉換符合預期
+     - Fuzzy Diﬀerential State Testing: 透過模糊測試技術，隨機產生輸入來比較不同 EVM 實作之間的行為差異，找出潛在的漏洞或錯誤
+     - Blockchain Testing: 模擬完整區塊鏈環境，測試區塊驗證、交易執行、手續費計算等機制的正確性
+     - Blockchain Negative Testing: 針對異常狀況（如惡意交易、無效區塊）進行測試，確保系統能正確處理錯誤情境，避免安全風險
+   - Execution APIs: 測試執行層提供的 API 是否符合規範，確保不同用戶端的 API 互通性及正確性
+2. Consensus Layer Testing: 針對以太坊的 PoS（權益證明）共識機制進行測試，包括驗證者行為、區塊提議與最終確定性，確保共識協議的穩定性與安全性
+3. Cross-Layer Testing
+   - Execution + Consensus: 測試兩個層級之間的互動與同步機制，確保執行層與共識層協同運作正常
+   - Hive: 一個自動化測試框架，支援多個以太坊用戶端的互通性測試，確保不同實作之間的一致性
+   - Devnets: 用於測試新功能、硬分叉升級或協議變更的小型私有測試網，讓開發者驗證新版本的行為
+   - Shadow-forks: 從主網或測試網擷取部分狀態並在獨立環境中進行測試，以驗證新功能的兼容性和穩定性
+   - Testnets: 公共測試網，如 Goerli、Sepolia，用於測試智能合約、協議升級及應用程式部署
+4. Ethereum Security: 透過各種測試技術發現與修復安全漏洞，包括智能合約審計、共識協議安全性分析、抗攻擊測試（如 Sybil 攻擊、防重放攻擊等），確保以太坊網路的安全性與穩定性
+
 <!-- Content_END -->

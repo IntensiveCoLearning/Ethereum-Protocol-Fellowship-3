@@ -61,6 +61,8 @@ Gas_{PrevBlock}*(1-B), if \space Gas_{PrevBlock}<\frac{GasLimit}{2} \\
 $$
 这个方案的动态在于A是可变的，A的范围是`0 ~ 12.5%`、B是`-10% ~ 0`
 
+**已勘误至2025.03.14笔记**
+
 
 ### 2025.03.12
 
@@ -78,6 +80,39 @@ $$交易费用=Gas 消耗量×Gas Price (Gwei)$$
 
 因此，在网络拥堵时，Gas Price 上升，交易费用变高；而在网络空闲时，Gas Price 下降，交易费用变低。在理解这两个概念时要万分注意。
 
+### 2025.03.14
+在学习了Gas和Gwei的区别后对上述笔记进行修改：
 
+基础费用的单位是Gwei，因此基础费用的变化影响的是燃料费和ETH的“汇率”，而并不影响交互本身需要多少燃料完成。
+
+上文提及基础费用是以太坊网络决定的，实际上有一个简单的公式，一个区块当前的基础费用是**由上一个区块是否超出目标燃料费**来决定，目标燃料费在EIP1559设定为燃料限额的一半，即：
+$$
+BaseFeePerGas\equiv
+\left \{
+\begin{array}{l}
+10^{9}, if\space伦敦升级之前 \\
+BaseFeePerGas_{PrevBlock}, if\space BaseFeePerGas_{PrevBlock}=\frac{GasLimit}{2} \\
+BaseFeePerGas_{PrevBlock}*(1+A), if \space BaseFeePerGas_{PrevBlock}>\frac{GasLimit}{2} \\
+BaseFeePerGas_{PrevBlock}*(1-A), if \space BaseFeePerGas_{PrevBlock}<\frac{GasLimit}{2} \\
+\end{array}
+\right.
+$$
+这个方案的动态在于A是可变的，A的范围是`-12.5 ~ 12.5%``
+
+而A的算法是：
+$$
+A = \frac{GasUse_{PrevBlock}-Gas_{target}}{Gas_{target}}*12.5\%
+$$
+A也叫做基础费用的变化幅度。
+
+这个里面有许多可以用于调整以太坊经济模型的参数，如：
+- 燃料费限额
+- 燃料费目标或弹性系数（$\frac{GasLimit}{2}$，分母也叫弹性系数 Elasticity multiplier，现在是2）
+- 基本费用最大分母（$\frac{1}{8}=12.5\%$，这是最极端的情况下，当前区块燃料费为零，那么分子为（燃料费限额-0）/燃料费限额=1。这个分母也可以调整）
+
+#### refs:
+- [EIP-1559](https://eips.ethereum.org/EIPS/eip-1559)
+- [以太坊Gas费(Ethereum Gas Fees)详细介绍：gas费计算、gas费实时查询、gas 费预测、ethereum gas tracker、ethereum gas charts | 币圈小林子](https://www.youtube.com/watch?v=eMX85xai2-U)
+- [燃料和费用|EF](https://ethereum.org/zh/developers/docs/gas/#base-fee)
 
 <!-- Content_END -->

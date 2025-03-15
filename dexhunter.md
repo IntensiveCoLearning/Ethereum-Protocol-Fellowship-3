@@ -143,5 +143,26 @@ validator的条件
 * A validator must not publish two distinct votes for the same target height
 * A validator must not vote within the span of its other votes.
 
+### 2025.03.14
+
+参考两本书
+* [Understanding-Ethereum-Go-Version](https://github.com/ABCDELabs/Understanding-Ethereum-Go-version)
+* [mastering ethereum](https://github.com/ethereumbook/ethereumbook)
+
+以及开始看以太坊源码
+* [reth](https://github.com/paradigmxyz/reth)
+* [go-eth](https://github.com/ethereum/go-ethereum)
+
+### 2025.03.15
+
+关注一下mev
+* 看到了siyuan大佬的[post](https://x.com/yzilabs/status/1899813012233752989)
+* [mev book](https://www.monoceros.com/insights/maximal-extractable-value-book)
+* [mev book on github](https://github.com/0xOsiris/Mev_Book)
+* also take a look at flash bot's mev letters
+
+了解了一些holesky的事情背景
+[grok summary](https://grok.com/share/bGVnYWN5_a8cfe9ef-e843-4539-8aee-cfaf4cc181e9)
+
 
 <!-- Content_END -->
