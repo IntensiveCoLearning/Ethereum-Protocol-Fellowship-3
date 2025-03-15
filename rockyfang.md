@@ -52,11 +52,17 @@ timezone: UTC+8
 - 阅读《精通以太坊》第三、四章，学习了公钥和私钥的关系，以及公钥是私钥通过椭圆曲线算法生成的。
 
 ### 2025.03.14
+
+笔记整理：https://github.com/rockyfang2024/Web3Learn/tree/main/ETH%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0
+
 - 阅读了《精通以太坊》第五、六章，学习了交易相关的知识
   - 了解到了交易是如何广播的，以及可以从交易的value和data来判断是转账还是智能合约。
   - 如何销毁ETH
 
 ### 2025.03.15
+
+笔记整理：https://github.com/rockyfang2024/Web3Learn/tree/main/ETH%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0
+
 - 阅读了《精通以太坊》第七章，学习智能合约和Solidity
 
 <!-- Content_END -->
