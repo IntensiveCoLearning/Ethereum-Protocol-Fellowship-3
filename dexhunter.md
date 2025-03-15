@@ -153,5 +153,13 @@ validator的条件
 * [reth](https://github.com/paradigmxyz/reth)
 * [go-eth](https://github.com/ethereum/go-ethereum)
 
+### 2025.03.15
+
+关注一下mev
+* 看到了siyuan大佬的[post](https://x.com/yzilabs/status/1899813012233752989)
+* [mev book](https://www.monoceros.com/insights/maximal-extractable-value-book)
+* [mev book on github](https://github.com/0xOsiris/Mev_Book)
+* also take a look at flash bot's mev letters
+
 
 <!-- Content_END -->
