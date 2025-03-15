@@ -161,5 +161,8 @@ validator的条件
 * [mev book on github](https://github.com/0xOsiris/Mev_Book)
 * also take a look at flash bot's mev letters
 
+了解了一些holesky的事情背景
+[grok summary](https://grok.com/share/bGVnYWN5_a8cfe9ef-e843-4539-8aee-cfaf4cc181e9)
+
 
 <!-- Content_END -->
