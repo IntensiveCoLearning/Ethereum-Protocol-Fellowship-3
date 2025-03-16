@@ -146,4 +146,26 @@ Execution Layer(執行層)和Consensus Layer(共識層)共同合作來處理交�
    - Testnets: 公共測試網，如 Goerli、Sepolia，用於測試智能合約、協議升級及應用程式部署
 4. Ethereum Security: 透過各種測試技術發現與修復安全漏洞，包括智能合約審計、共識協議安全性分析、抗攻擊測試（如 Sybil 攻擊、防重放攻擊等），確保以太坊網路的安全性與穩定性
 
+### 2025.03.16
+#### Roadmap
+- Merge: Better Proof of Stake: 將以太坊從 PoW（工作量證明）轉換為 PoS（權益證明），提高能源效率與安全性
+  - 2022 年 9 月 The Merge 正式完成，主網與信標鏈（Beacon Chain）合併，淘汰 PoW
+  - 以太坊的區塊由驗證者（Validators）產生，而非礦工（Miners）
+  - 減少 99.95% 能耗，使以太坊變得更環保
+    
+- Surge: More data (availability) for rollups: 透過分片（Sharding）技術，降低 Rollup 成本，提升以太坊的交易吞吐量
+  - 目前以太坊主鏈的交易處理能力有限，每秒僅 15-30 筆（TPS）
+  - Danksharding 和 Proto-Danksharding（EIP-4844） 可透過 Blob data 提供更便宜的 Rollup 交易數據可用性
+    
+- Scourge: Less MEV downsides: 降低最大可提取價值（MEV，Maximal Extractable Value）帶來的負面影響，減少以太坊生態內的經濟不公平性
+  - PBS（Proposer-Builder Separation） 設計可將區塊提議者與構建者分離，降低壟斷與操控風險
+- Verge: Easier verification
+  - 主要透過 Verkle Trees 來減少驗證數據存儲需求
+    
+- Purge: Simpler protocol: 透過更好的密碼學技術，讓驗證者可以更輕鬆地運行節點，降低區塊驗證成本
+  - 目前以太坊節點需要儲存完整的區塊歷史記錄，佔據大量存儲空間
+    
+- Splurge: Miscellaneous goodies: 刪除過時或不必要的歷史數據，降低節點的運行成本，使網路更輕量化
+  - Account Abstraction（AA）：讓用戶可以自定義錢包的簽名方式，提高安全性與可用性
+
 <!-- Content_END -->
