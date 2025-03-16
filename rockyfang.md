@@ -67,6 +67,8 @@ timezone: UTC+8
 
 ### 2025.03.16
 
+笔记整理：https://github.com/rockyfang2024/Web3Learn/tree/main/ETH%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0
 
+- 快速浏览《精通以太坊》第九到十二章，了解了DAPP、智能合约的安全性、代币
 
 <!-- Content_END -->
