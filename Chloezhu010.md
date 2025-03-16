@@ -184,7 +184,7 @@ timezone: UTC+1
     - EVM instructions overview
         - [evm.codes](https://www.evm.codes/)
 - EVM unique features
-  - Internal calls
+    - Internal calls
         - What's internal call: an internal call refers to a function call made from one smart contract function to another within the same execution context. These calls do not create new transactions but occur within the same transaction that triggered the original contract execution
         - Instructions that invoke other contracts
             - Call
@@ -211,11 +211,22 @@ timezone: UTC+1
         - execution is limited by gas units
         - on all levels:
             - internal calls
-            - tx：mostly by wallets
+            - tx：wallets usually est. the gas
             - block: gas limit discussion
-        - instruction cost some gas: constant, complex formula
-- EVM object format
-- 
-
+        - instruction cost some gas
+            - constant
+            - complex formula: 
+- EVM object format (EOF)
+    - Why EOF?
+    - What's the solution？
+    - What's the benefit
+        - control flow in EVM
 </details>
+### 2025.03.17
+
+
+### 2025.03.18
+
+
+
 <!-- Content_END -->
