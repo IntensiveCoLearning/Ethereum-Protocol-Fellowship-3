@@ -40,4 +40,87 @@ timezone: UTC+1
 ### 2025.03.14
 - Finished Portal Summit discussion notes: https://hackmd.io/DWsDCFooT-u7skmgAb-uSA?view
 
+### 2025.03.15
+#### Ben Edgingon's talk on Gasper
+- Video link: https://www.youtube.com/watch?v=cOivWPEBEMo&t=346s
+- Slides link: https://docs.google.com/presentation/d/1mSn8JUfY88HvcCauLBkKRuy3f6YFlV9VcJptav0Ef24/edit?usp=sharing
+- Notes
+    - Recap 
+        - The problem
+            - Ethereum prioritize liveness over safety, which means it can be forkful
+        - Solution: the fork choice rule
+            - Converge the block tree to blockchain
+        - Historical issues with Ethereum PoS fork choice: 11:03
+            - Recent holesky pectra upgrade struggle
+        - Specs
+            - class AttestationData: https://github.com/ethereum/annotated-spec/blob/master/phase0/beacon-chain.md#attestationdata
+                - LMD GHOST vote: for the block
+                    - depend on attestations received via gossip
+                    - need real-time decision
+                    - https://github.com/ethereum/annotated-spec/blob/master/phase0/fork-choice.md
+                - FFG vote: for the 2 checkpoints
+                    - depend on attestion in blocks
+                    - part of block and epoch processing
+                    - https://github.com/ethereum/annotated-spec/blob/master/phase0/beacon-chain.md
+            - class Store: https://github.com/ethereum/annotated-spec/blob/master/phase0/fork-choice.md
+                - each node's view of the network
+        - Events
+          - LMD GHOST fork choice is event driven
+          - handlers
+              - on_tick()
+              - on_block()
+              - on_attestation()
+              - on_attester_slashing()
+          - always ready to output a best head block via a call to get_head()
+    - LMD GHOST
+        - latest message driven
+            - rely only on attestation
+            - validators attest to what they believe to be the best head in the current slot
+            - only the most recent attestation from each validtor counts
+        - GHOST
+            - greedy heaviest-observed sub-tree algo
+        - Key points
+            - timescale: 12s slot-based
+            - goal:
+                - used by the block proposer to decide on which branch to build its block
+                - used by attesters to choose which branch to attest to
+            - heuristic: which branch is least likely to be orphaned in future?
+            - based on
+                - weighting the votes received in attestations
+                - a max of only 3.125% of the votes are fresh
+            - properties
+                - liveness: always output a viable head block on which to build
+                - safety: no useful guarantees
+        - Ignore undesirable blocks
+            - most in on_block()
+        - Proposer boost
+            - balancing attack in 2020
+            - solution: proposer boost
+                - extra weight in get_weight() within the 4s at the start
+                - get_proposer_score()
+                - can also fork out late blocks
+        - Slashing mechanism
+    - Casper FFG
+        - timescale: epoch-based 32 slots (6.4 min)
+        - goal: confer finality on the chain
+        - heuristic: 2-phase commit based on agreement among validators having at least 2/3 of the state
+        - based on: weight the source adn target votes received in attestation contained in blocks
+        - properties
+            - plausible liveness: cannot get into a stuck state
+            - accountable safety: finalize conflicting checkpoints comes at enormous cost
+        - checkpoints
+            - rely on seeing votes from the whole validator set
+            - accounting done at each epoch end transition
+            - checkpoint: the block at the first slot of the epoch
+        - 2-phase commit: justification
+        - Casper commandment: no double vote, no surround vote
+        - Slashing in Casper FFG
+            - deliver economic finality
+    - Gasper: the combination
+        - Apply casper ffg's fork choice: follow the chain containing the justified checkpoint of the greatest height
+        - Issues
+            - block tree filtering: resolve potential finalisation deadlock issue
+            - unrealised justification and finalization
+    - Single slot finality
+
 <!-- Content_END -->

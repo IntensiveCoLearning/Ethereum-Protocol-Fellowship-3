@@ -380,9 +380,29 @@ Output:
 }
 ```
 
-TODO how does ECDSA work?
-
 TODO Debug func SignSetCode(prv *ecdsa.PrivateKey, auth SetCodeAuthorization) (SetCodeAuthorization, error) {
+
+# 2025.03.16
+
+## How does ECDSA work?
+
+https://www.instructables.com/Understanding-how-ECDSA-protects-your-data/
+
+ECDSA sthands for Elliptic Curve Digital Signature Algorithm.
+
+ECDSA is used for generating a signature for data and no one can fake the signature. The receiver can verify the data with the signature. It is not an encryption algorithm like AES.
+
+Curve and Algorithm are two important parts of ECDSA.
+
+The process of generating a private key and public key: Select a predefined elliptic curve -> pick a random point on the curve (base point) -> generate a random number (private key) -> magical_equation(pk, base point) = public key.
+
+The process of signing a file: sign(private key, hash of the file) = signature -> The signature consists of two components: R and S
+
+The process of verifying a file: verify(public key, S) = R' -> compare if R' = R to verify if the signature is correct -> to verify the signer owns private key
+
+TODO Step 3: Why Use ECDSA?
+
+
 
 
 

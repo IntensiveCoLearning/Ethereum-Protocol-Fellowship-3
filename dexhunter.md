@@ -165,4 +165,21 @@ validator的条件
 [grok summary](https://grok.com/share/bGVnYWN5_a8cfe9ef-e843-4539-8aee-cfaf4cc181e9)
 
 
+### 2025.03.16
+
+看了这个黄皮书简化版的解释[1]和精通以太坊第一章[2]
+
+总结下
+以太坊合约是一个有确定性但实际上无限的状态机（unbounded state machine），主要有两个功能
+1. 全局可访问的状态 singleton state (distributed single-state)
+2. 可以改变这个状态的虚拟机
+
+World State 世界状态是 地址 到 账户 的映射，这部分的信息用 Merkle Patricia Trees 存储在数据库后端
+
+我觉得这篇关于以太坊的技术实现文章写的非常通俗易懂，如果有不懂的内容可以参考
+
+[1]: https://github.com/chronaeon/beigepaper/blob/master/beigepaper.pdf
+[2]: https://github.com/ethereumbook/ethereumbook/blob/develop/01what-is.asciidoc
+
+
 <!-- Content_END -->

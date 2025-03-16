@@ -115,4 +115,17 @@ A也叫做基础费用的变化幅度。
 - [以太坊Gas费(Ethereum Gas Fees)详细介绍：gas费计算、gas费实时查询、gas 费预测、ethereum gas tracker、ethereum gas charts | 币圈小林子](https://www.youtube.com/watch?v=eMX85xai2-U)
 - [燃料和费用|EF](https://ethereum.org/zh/developers/docs/gas/#base-fee)
 
+
+
+### 2025.03.16
+#### 基本交易成本
+
+常见的基本交易燃料 Intrinsic Gas 分两类：
+- **普通转账（ETH 发送）**：21,000 Gas，用于交易验证和签名验证
+- **合约调用**：21,000 Gas + 额外计算消耗
+- **合约创建**：21,000 Gas + 32000 Gas，用于存储合约代码和初始化状态
+
+其中，转账基础费用记为 $G_{transaction}​=21000Gas$ ，合约创建费用记为 $G_{txCreate}=32000Gas$ 
+
+
 <!-- Content_END -->
