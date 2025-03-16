@@ -44,6 +44,8 @@ timezone: UTC+1
 #### Ben Edgingon's talk on Gasper
 - Video link: https://www.youtube.com/watch?v=cOivWPEBEMo&t=346s
 - Slides link: https://docs.google.com/presentation/d/1mSn8JUfY88HvcCauLBkKRuy3f6YFlV9VcJptav0Ef24/edit?usp=sharing
+<details>
+<summary>Click to expand</summary>
 - Notes
     - Recap 
         - The problem
@@ -122,5 +124,5 @@ timezone: UTC+1
             - block tree filtering: resolve potential finalisation deadlock issue
             - unrealised justification and finalization
     - Single slot finality
-
+</details>
 <!-- Content_END -->
