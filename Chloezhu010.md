@@ -130,10 +130,16 @@ timezone: UTC+1
 ### 2025.03.16
 #### Pavel's talk on EVM
 - Video:
-- Slides:
+- Slides: https://docs.google.com/presentation/d/1_6tKfzWexxCe9og0c-_Qv0BfgSfqdlusXAgkStq3oY8/edit?usp=sharing
 <details>
 <summary>EVM Notes</summary>
 
+- Ethereum state transition
+    - 
+- What's VM
+- EVM
+- EVM unique features
+- EVM object format
 - 
 
 </details>
