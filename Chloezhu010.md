@@ -44,8 +44,9 @@ timezone: UTC+1
 #### Ben Edgingon's talk on Gasper
 - Video link: https://www.youtube.com/watch?v=cOivWPEBEMo&t=346s
 - Slides link: https://docs.google.com/presentation/d/1mSn8JUfY88HvcCauLBkKRuy3f6YFlV9VcJptav0Ef24/edit?usp=sharing
-    <details>
-    <summary>Notes</summary>
+<details>
+<summary>Notes</summary>
+    
     - Recap 
         - The problem
             - Ethereum prioritize liveness over safety, which means it can be forkful
@@ -123,5 +124,6 @@ timezone: UTC+1
             - block tree filtering: resolve potential finalisation deadlock issue
             - unrealised justification and finalization
     - Single slot finality
-    </details>
+    
+</details>
 <!-- Content_END -->
