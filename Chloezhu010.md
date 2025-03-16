@@ -45,7 +45,7 @@ timezone: UTC+1
 - Video link: https://www.youtube.com/watch?v=cOivWPEBEMo&t=346s
 - Slides link: https://docs.google.com/presentation/d/1mSn8JUfY88HvcCauLBkKRuy3f6YFlV9VcJptav0Ef24/edit?usp=sharing
 <details>
-<summary>Notes</summary>
+<summary>Gasper Notes</summary>
     
     - Recap 
         - The problem
@@ -125,5 +125,16 @@ timezone: UTC+1
             - unrealised justification and finalization
     - Single slot finality
     
+</details>
+
+### 2025.03.16
+#### Pavel's talk on EVM
+- Video:
+- Slides:
+<details>
+<summary>EVM Notes</summary>
+
+- 
+
 </details>
 <!-- Content_END -->
