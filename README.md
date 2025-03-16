@@ -107,7 +107,7 @@ Telegram：https://t.me/ETHPandaOrg/5427
 | [billchen-818](https://github.com/IntensiveCoLearning/Ethereum-Protocol-Fellowship-3/blob/main/billchen-818.md) | ⭕️ | ⭕️ | ❌ | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
 | [wsjtadk](https://github.com/IntensiveCoLearning/Ethereum-Protocol-Fellowship-3/blob/main/wsjtadk.md) | ⭕️ | ⭕️ | ❌ | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
 | [dexhunter](https://github.com/IntensiveCoLearning/Ethereum-Protocol-Fellowship-3/blob/main/dexhunter.md) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |   | | | | | | | | | | | | | | | |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   | | | | |
-| [yihaowang](https://github.com/IntensiveCoLearning/Ethereum-Protocol-Fellowship-3/blob/main/yihaowang.md) | ✅ | ✅ | ✅ | ✅ | ⭕️ | ✅ |   | | | | | | | | | | | | | | | |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   | | | | |
+| [yihaowang](https://github.com/IntensiveCoLearning/Ethereum-Protocol-Fellowship-3/blob/main/yihaowang.md) | ✅ | ✅ | ✅ | ✅ | ⭕️ | ✅ | ✅ | | | | | | | | | | | | | | | |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   | | | | |
 | [praxis](https://github.com/IntensiveCoLearning/Ethereum-Protocol-Fellowship-3/blob/main/praxis.md) | ✅ | ⭕️ | ⭕️ | ❌ | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
 | [ricky5932TW](https://github.com/IntensiveCoLearning/Ethereum-Protocol-Fellowship-3/blob/main/ricky5932TW.md) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | | | | | | | | | | | | | | | |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   | | | | |
 | [rockyfang](https://github.com/IntensiveCoLearning/Ethereum-Protocol-Fellowship-3/blob/main/rockyfang.md) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |   | | | | | | | | | | | | | | | |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   | | | | |
@@ -119,6 +119,7 @@ Telegram：https://t.me/ETHPandaOrg/5427
 | [shengxj1](https://github.com/IntensiveCoLearning/Ethereum-Protocol-Fellowship-3/blob/main/shengxj1.md) | ⭕️ | ⭕️ | ✅ | ❌ | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
 | [cxc474](https://github.com/IntensiveCoLearning/Ethereum-Protocol-Fellowship-3/blob/main/cxc474.md) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |   | | | | | | | | | | | | | | | |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   | | | | |
 <!-- END_COMMIT_TABLE -->
+
 
 
 
