@@ -129,16 +129,91 @@ timezone: UTC+1
 
 ### 2025.03.16
 #### Pavel's talk on EVM
-- Video:
+- Video: https://www.youtube.com/watch?v=gYnx_YQS8cM&t=907s
 - Slides: https://docs.google.com/presentation/d/1_6tKfzWexxCe9og0c-_Qv0BfgSfqdlusXAgkStq3oY8/edit?usp=sharing
 <details>
 <summary>EVM Notes</summary>
 
 - Ethereum state transition
-    - 
+    - Tx and State
+    - State and Accounts
+        - State = collection of accounts
+        - address => account
+        - Account
+            - balance (eth account): 256-bit nbr
+            - nounce: 64-bit nbr
+            - code: bytes
+            - storage (key-value): 32-byte, 32-byte
+        - Commitments
+    - Accounts duality
+        - EOA (people account): balance, nonce
+        - Contracts (passive code): balance, code, storage, nonce
 - What's VM
+    - system VM vs process VM
+        - system VM: not relevant
+        - process/ app VM: managed runtime env
+            - eg. JVM, .NET, webassembly
+        - classic programming lang
+            - lang, compiler, different hw/ OS architecture
+        - managed programming lang
+            - add VM btw compiler and different hw/ OS architecture
+    - stack-based vs register-based VM
+        - stack-based
+            - infinite stack
+            - short instructions: bytecode
+            - eg. JVM, .NET, wasm, EVM
+        - register-based
+            - infinite registers
+            - longer instruction
+            - eg. Dalvik VM, Lua VM
 - EVM
+    - Features
+        - bytecode
+        - stack-based
+        - big stack items
+        - no validation
+        - many memories
+        - exotic instructions
+    - 256-bit values
+    - EVM interpreter steps
+        - fetch next instruction (if exists)
+        - stack underflow
+        - stack overflow
+        - gas cost calculation + out-of-gas check
+        - do actual work
+    - EVM instructions overview
+        - [evm.codes](https://www.evm.codes/)
 - EVM unique features
+  - Internal calls
+        - What's internal call: an internal call refers to a function call made from one smart contract function to another within the same execution context. These calls do not create new transactions but occur within the same transaction that triggered the original contract execution
+        - Instructions that invoke other contracts
+            - Call
+            - Delegatecall
+            - StaticCall
+        - Args
+            - address
+            - gas
+            - value
+            - input
+        - Results
+            - return data
+            - remaining gas
+    - EVM memories
+        - stack: instruction operands
+        - memory: main volatile memory
+            - limited by gas 
+        - calldata: input data
+            - read only
+        - returndata: output from sub-calls
+            - read only
+        - storage: persistent storage
+    - Gas metering: 52:03
+        - execution is limited by gas units
+        - on all levels:
+            - internal calls
+            - tx：mostly by wallets
+            - block: gas limit discussion
+        - instruction cost some gas: constant, complex formula
 - EVM object format
 - 
 
