@@ -168,4 +168,19 @@ Execution Layer(執行層)和Consensus Layer(共識層)共同合作來處理交�
 - Splurge: Miscellaneous goodies: 刪除過時或不必要的歷史數據，降低節點的運行成本，使網路更輕量化
   - Account Abstraction（AA）：讓用戶可以自定義錢包的簽名方式，提高安全性與可用性
 
+### 2025.03.17
+#### Ethereum Execution Layer Spec
+什麼是Ethereum Consensus Specs: 是以太坊共識層的技術規範，用於定義 驗證者行為、區塊處理、狀態轉換、罰則 等規則。這些規範不是直接執行的程式碼，而是提供一個標準，讓所有以太坊客戶端（如 Prysm、Lighthouse、Teku）都能夠正確實作共識機
+
+
+#### Ethereum Consensus Specifications
+以太坊共識層規範（Ethereum Consensus Layer Specifications，簡稱「共識規範」）是 以太坊基金會 所維護的官方規範，負責定義以太坊 共識層（Consensus Layer, CL） 的運作方式。這部分與 執行層（Execution Layer, EL） 相輔相成，共同構成現代以太坊協議的基礎。
+
+共識層的主要功能：
+- 確保以太坊網絡在 Proof of Stake（PoS） 下正常運作
+- 負責 驗證區塊、同步區塊、管理驗證者（Validators）
+- 提供 最終性（Finality），確保區塊不會被輕易回滾
+- 協調 驗證者獎勵和懲罰（Slashing）
+
+
 <!-- Content_END -->

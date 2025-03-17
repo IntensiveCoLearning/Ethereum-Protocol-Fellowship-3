@@ -44,83 +44,191 @@ timezone: UTC+1
 #### Ben Edgingon's talk on Gasper
 - Video link: https://www.youtube.com/watch?v=cOivWPEBEMo&t=346s
 - Slides link: https://docs.google.com/presentation/d/1mSn8JUfY88HvcCauLBkKRuy3f6YFlV9VcJptav0Ef24/edit?usp=sharing
-- Notes
-    - Recap 
-        - The problem
-            - Ethereum prioritize liveness over safety, which means it can be forkful
-        - Solution: the fork choice rule
-            - Converge the block tree to blockchain
-        - Historical issues with Ethereum PoS fork choice: 11:03
-            - Recent holesky pectra upgrade struggle
-        - Specs
-            - class AttestationData: https://github.com/ethereum/annotated-spec/blob/master/phase0/beacon-chain.md#attestationdata
-                - LMD GHOST vote: for the block
-                    - depend on attestations received via gossip
-                    - need real-time decision
-                    - https://github.com/ethereum/annotated-spec/blob/master/phase0/fork-choice.md
-                - FFG vote: for the 2 checkpoints
-                    - depend on attestion in blocks
-                    - part of block and epoch processing
-                    - https://github.com/ethereum/annotated-spec/blob/master/phase0/beacon-chain.md
-            - class Store: https://github.com/ethereum/annotated-spec/blob/master/phase0/fork-choice.md
-                - each node's view of the network
-        - Events
-          - LMD GHOST fork choice is event driven
-          - handlers
-              - on_tick()
-              - on_block()
-              - on_attestation()
-              - on_attester_slashing()
-          - always ready to output a best head block via a call to get_head()
-    - LMD GHOST
-        - latest message driven
-            - rely only on attestation
-            - validators attest to what they believe to be the best head in the current slot
-            - only the most recent attestation from each validtor counts
-        - GHOST
-            - greedy heaviest-observed sub-tree algo
-        - Key points
-            - timescale: 12s slot-based
-            - goal:
-                - used by the block proposer to decide on which branch to build its block
-                - used by attesters to choose which branch to attest to
-            - heuristic: which branch is least likely to be orphaned in future?
-            - based on
-                - weighting the votes received in attestations
-                - a max of only 3.125% of the votes are fresh
-            - properties
-                - liveness: always output a viable head block on which to build
-                - safety: no useful guarantees
-        - Ignore undesirable blocks
-            - most in on_block()
-        - Proposer boost
-            - balancing attack in 2020
-            - solution: proposer boost
-                - extra weight in get_weight() within the 4s at the start
-                - get_proposer_score()
-                - can also fork out late blocks
-        - Slashing mechanism
-    - Casper FFG
-        - timescale: epoch-based 32 slots (6.4 min)
-        - goal: confer finality on the chain
-        - heuristic: 2-phase commit based on agreement among validators having at least 2/3 of the state
-        - based on: weight the source adn target votes received in attestation contained in blocks
+<details>
+<summary>Gasper Notes</summary>
+    
+- Recap 
+    - The problem
+        - Ethereum prioritize liveness over safety, which means it can be forkful
+    - Solution: the fork choice rule
+        - Converge the block tree to blockchain
+    - Historical issues with Ethereum PoS fork choice: 11:03
+        - Recent holesky pectra upgrade struggle
+    - Specs
+        - class AttestationData: https://github.com/ethereum/annotated-spec/blob/master/phase0/beacon-chain.md#attestationdata
+            - LMD GHOST vote: for the block
+                - depend on attestations received via gossip
+                - need real-time decision
+                - https://github.com/ethereum/annotated-spec/blob/master/phase0/fork-choice.md
+            - FFG vote: for the 2 checkpoints
+                - depend on attestion in blocks
+                - part of block and epoch processing
+                - https://github.com/ethereum/annotated-spec/blob/master/phase0/beacon-chain.md
+        - class Store: https://github.com/ethereum/annotated-spec/blob/master/phase0/fork-choice.md
+            - each node's view of the network
+    - Events
+      - LMD GHOST fork choice is event driven
+      - handlers
+          - on_tick()
+          - on_block()
+          - on_attestation()
+          - on_attester_slashing()
+      - always ready to output a best head block via a call to get_head()
+- LMD GHOST
+    - latest message driven
+        - rely only on attestation
+        - validators attest to what they believe to be the best head in the current slot
+        - only the most recent attestation from each validtor counts
+    - GHOST
+        - greedy heaviest-observed sub-tree algo
+    - Key points
+        - timescale: 12s slot-based
+        - goal:
+            - used by the block proposer to decide on which branch to build its block
+            - used by attesters to choose which branch to attest to
+        - heuristic: which branch is least likely to be orphaned in future?
+        - based on
+            - weighting the votes received in attestations
+            - a max of only 3.125% of the votes are fresh
         - properties
-            - plausible liveness: cannot get into a stuck state
-            - accountable safety: finalize conflicting checkpoints comes at enormous cost
-        - checkpoints
-            - rely on seeing votes from the whole validator set
-            - accounting done at each epoch end transition
-            - checkpoint: the block at the first slot of the epoch
-        - 2-phase commit: justification
-        - Casper commandment: no double vote, no surround vote
-        - Slashing in Casper FFG
-            - deliver economic finality
-    - Gasper: the combination
-        - Apply casper ffg's fork choice: follow the chain containing the justified checkpoint of the greatest height
-        - Issues
-            - block tree filtering: resolve potential finalisation deadlock issue
-            - unrealised justification and finalization
-    - Single slot finality
+            - liveness: always output a viable head block on which to build
+            - safety: no useful guarantees
+    - Ignore undesirable blocks
+        - most in on_block()
+    - Proposer boost
+        - balancing attack in 2020
+        - solution: proposer boost
+            - extra weight in get_weight() within the 4s at the start
+            - get_proposer_score()
+            - can also fork out late blocks
+    - Slashing mechanism
+- Casper FFG
+    - timescale: epoch-based 32 slots (6.4 min)
+    - goal: confer finality on the chain
+    - heuristic: 2-phase commit based on agreement among validators having at least 2/3 of the state
+    - based on: weight the source adn target votes received in attestation contained in blocks
+    - properties
+        - plausible liveness: cannot get into a stuck state
+        - accountable safety: finalize conflicting checkpoints comes at enormous cost
+    - checkpoints
+        - rely on seeing votes from the whole validator set
+        - accounting done at each epoch end transition
+        - checkpoint: the block at the first slot of the epoch
+    - 2-phase commit: justification
+    - Casper commandment: no double vote, no surround vote
+    - Slashing in Casper FFG
+        - deliver economic finality
+- Gasper: the combination
+    - Apply casper ffg's fork choice: follow the chain containing the justified checkpoint of the greatest height
+    - Issues
+        - block tree filtering: resolve potential finalisation deadlock issue
+        - unrealised justification and finalization
+- Single slot finality
+    
+</details>
+
+### 2025.03.16
+#### Pavel's talk on EVM
+- Video: https://www.youtube.com/watch?v=gYnx_YQS8cM&t=907s
+- Slides: https://docs.google.com/presentation/d/1_6tKfzWexxCe9og0c-_Qv0BfgSfqdlusXAgkStq3oY8/edit?usp=sharing
+<details>
+<summary>EVM Notes</summary>
+
+- Ethereum state transition
+    - Tx and State
+    - State and Accounts
+        - State = collection of accounts
+        - address => account
+        - Account
+            - balance (eth account): 256-bit nbr
+            - nounce: 64-bit nbr
+            - code: bytes
+            - storage (key-value): 32-byte, 32-byte
+        - Commitments
+    - Accounts duality
+        - EOA (people account): balance, nonce
+        - Contracts (passive code): balance, code, storage, nonce
+- What's VM
+    - system VM vs process VM
+        - system VM: not relevant
+        - process/ app VM: managed runtime env
+            - eg. JVM, .NET, webassembly
+        - classic programming lang
+            - lang, compiler, different hw/ OS architecture
+        - managed programming lang
+            - add VM btw compiler and different hw/ OS architecture
+    - stack-based vs register-based VM
+        - stack-based
+            - infinite stack
+            - short instructions: bytecode
+            - eg. JVM, .NET, wasm, EVM
+        - register-based
+            - infinite registers
+            - longer instruction
+            - eg. Dalvik VM, Lua VM
+- EVM
+    - Features
+        - bytecode
+        - stack-based
+        - big stack items
+        - no validation
+        - many memories
+        - exotic instructions
+    - 256-bit values
+    - EVM interpreter steps
+        - fetch next instruction (if exists)
+        - stack underflow
+        - stack overflow
+        - gas cost calculation + out-of-gas check
+        - do actual work
+    - EVM instructions overview
+        - [evm.codes](https://www.evm.codes/)
+- EVM unique features
+    - Internal calls
+        - What's internal call: an internal call refers to a function call made from one smart contract function to another within the same execution context. These calls do not create new transactions but occur within the same transaction that triggered the original contract execution
+        - Instructions that invoke other contracts
+            - Call
+            - Delegatecall
+            - StaticCall
+        - Args
+            - address
+            - gas
+            - value
+            - input
+        - Results
+            - return data
+            - remaining gas
+    - EVM memories
+        - stack: instruction operands
+        - memory: main volatile memory
+            - limited by gas 
+        - calldata: input data
+            - read only
+        - returndata: output from sub-calls
+            - read only
+        - storage: persistent storage
+    - Gas metering: 52:03
+        - execution is limited by gas units
+        - on all levels:
+            - internal calls
+            - tx：wallets usually est. the gas
+            - block: gas limit discussion
+        - instruction cost some gas
+            - constant
+            - complex formula: 
+- EVM object format (EOF)
+    - Why EOF?
+    - What's the solution？
+    - What's the benefit
+        - control flow in EVM
+
+</details>
+
+### 2025.03.17
+
+
+### 2025.03.18
+
+
 
 <!-- Content_END -->

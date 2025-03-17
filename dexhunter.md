@@ -181,5 +181,33 @@ World State 世界状态是 地址 到 账户 的映射，这部分的信息用 
 [1]: https://github.com/chronaeon/beigepaper/blob/master/beigepaper.pdf
 [2]: https://github.com/ethereumbook/ethereumbook/blob/develop/01what-is.asciidoc
 
+### 2025.03.17
+
+看精通以太坊第二章[1]
+
+1 wei = 1e-18 ether
+or 1 ether = 1e18 wei
+
+wallet (personal opinion)
+* ~~metamask~~ -> DO NOT USE (as for March 2025) unless you are lazy
+-> rabby wallet (the safe one)
+
+don't lose your priv key
+-> use a cold wallet if possible
+
+#### Networks
+
+* main net
+* test net
+    * ropsten
+    * kovan
+    * rinkeby
+* localhost/custom rpc
+
+TODO: will read more tomorrow about smart contract and world computer concept
+
+
+[1]: https://github.com/ethereumbook/ethereumbook/blob/develop/02intro.asciidoc
+
 
 <!-- Content_END -->
