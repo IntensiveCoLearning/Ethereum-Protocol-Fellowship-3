@@ -71,4 +71,11 @@ timezone: UTC+8
 
 - 快速浏览《精通以太坊》第九到十二章，了解了DAPP、智能合约的安全性、代币
 
+### 2025.03.17
+
+笔记整理：https://github.com/rockyfang2024/Web3Learn/tree/main/ETH%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0
+
+
+学习Gas 是如何计算的，为什么 Gas 会波动，如何创建 Gas 高效的智能合约
+
 <!-- Content_END -->
