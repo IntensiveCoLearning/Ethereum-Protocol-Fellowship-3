@@ -135,6 +135,37 @@ Calldata 是指随交易发送到智能合约的输入数据，Calldata需要占
 - 非零字节：16 Gas
 
 
+### 2025.03.18
+#### 计算合约执行成本
 
+智能合约的底层操作是通过EVM 操作码执行，每个操作码代表一种特定的操作，各操作码所需燃料费请见：[EVM操作码|EF](https://ethereum.org/zh/developers/docs/evm/opcodes/)
+
+在以太坊中，有两类操作：**计算（Computation）** 和 **存储变更（Storage Modification）** 但它们的 Gas 成本计算方式和对网络的影响大不相同。
+##### 计算 Computation
+计算指的是 EVM 运行智能合约时执行的算术、逻辑、数据操作等。
+- 主要包括：`ADD`、`MUL`、`DIV`、`LT`、`EQ`、`SHA3`、`CALL`、`RETURN` 等指令。
+- 这些指令的 Gas 成本通常是 **固定的** 或 **动态计算的（如 EXP）**，但不会对区块链的长期状态产生影响。
+
+##### 存储变更 Storage Modification
+主要涉及对合约 storage 存储 变量的读写，即 `SLOAD`读取存储槽 和 `SSTORE`写入存储槽
+
+**存储比计算昂贵得多**，因为存储变更会永久写入以太坊的状态数据库，消耗较多的磁盘 I/O 和同步成本
+
+###### SLOAD
+根据EIP-2929，`SLOAD`操作的燃料消耗分为两种：
+- Cold Storage Slot 冷储存槽：如果这是本次交易中首次访问的存储槽，SLOAD 操作会消耗 2100 Gas
+- Warm Storage Slot 温储存槽：如果该存储槽在本次交易中已被访问过，SLOAD 操作仅消耗 100 Gas
+
+[SLOAD | EVM操作码 | Github](https://github.com/wolflo/evm-opcodes/blob/main/gas.md#a6-sload)
+###### SSTORE
+同样的，`SSTORE`也会根据冷、温储存槽增减燃料费，如果是冷储存槽则增加2100Gas。[SSTORE | EVM操作码 | Github](https://github.com/wolflo/evm-opcodes/blob/main/gas.md#a7-sstore)
+
+根据储存值，燃料费有以下机制：
+- 从 0 改为 非 0：
+    - 消耗 20,000 Gas：将存储槽从零值修改为非零值时，需要消耗 20,000 Gas。
+- 从 非 0 改为 0：
+    - 消耗 5,000 Gas，且在交易执行成功后可退款 15,000 Gas：将存储槽从非零值修改为零值时，初始消耗 5,000 Gas，但由于释放了存储空间，协议设计允许在交易成功执行后返还 15,000 Gas。
+- 从 非 0 改为 另一个 非 0：
+    - 消耗 5,000 Gas：将存储槽从一个非零值修改为另一个非零值时，消耗 5,000 Gas。
 
 <!-- Content_END -->
