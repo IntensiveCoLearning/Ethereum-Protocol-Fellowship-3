@@ -433,4 +433,16 @@ func ApplyTransaction(evm *vm.EVM, gp *GasPool, statedb *state.StateDB, header *
 ![image](https://github.com/user-attachments/assets/50888072-00f5-4a49-aed2-6a376ea6f0f6)
 
 
+### 2025.03.18
+以太坊的 p2p 协议实现是 devp2p，包含了以太坊中用到的所有 p2p 协议，libp2p 经常会和 devp2p 一起比较，总的来说，devp2p 是为以太坊协议开发的，而且 libp2p 是一个独立的 p2p 协议库，不和具体的应用绑定。devp2p 也在逐步采用 libp2p 的实现。
+
+devp2p 有三个核心组件：
+
+- 节点发现服务（Discv4/Discv5）：用于和其他节点进行交互，并将发现的节点信息保存在本地，代码实现在 `p2p/discover` ，其中使用 Kademlia DHT 算法来维护 p2p 网络的拓扑。
+- ENR（Ethereum Node Record）：用于存储发现的节点信息，发现服务中发现的节点信息会被保存为 ENR 格式，代码实现在 `p2p/enr`。
+- RLPx 传输协议：当前执行层的数据都是编码成 RLP 格式，RLPx 就是节点之间传输数据所采用的协议的，代码实现在 `p2p/rlpx` 。
+
+基于 devp2p 实现的协议的都在 `eth/protocols` 中，其中 `eth/protocols/eth` 协议是其中主要的一个实现，主要用于区块和交易的传播，在之前分析交易源码的流程中已经说到这个协议的作用。还有 snap 协议用于具体节点的快速同步，代码实现在 `eth/protocols/snap`。
+
+
 <!-- Content_END -->
