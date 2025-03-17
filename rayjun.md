@@ -417,5 +417,20 @@ func ApplyTransaction(evm *vm.EVM, gp *GasPool, statedb *state.StateDB, header *
 在具体的 Process 里面，处理逻辑就很清晰了，和之前打包交易的流程类似，不断在 evm 中执行交易，然后修改状态数据库，与打包不同的地方在于，这里只是将新区块中的交易重放一遍，而不需要去交易池中获取。
 ![image](https://github.com/user-attachments/assets/5d8ac890-f025-48b5-a655-1274ef58a9a0)
 
+### 2025.03.17
+在 cmd/geth/main.go 的 startNode 中启动了 p2p 模块，具体在 utils.StartNode 中实现：
+![image](https://github.com/user-attachments/assets/5b8f8387-be10-4daf-9bf8-541151ee2ad7)
+![image](https://github.com/user-attachments/assets/636a5e85-b755-4b59-9370-b9e46e4b3c63)
+![image](https://github.com/user-attachments/assets/7cc041c5-d27e-4845-a1a1-b5cec97078bf)
+
+在 eth/backend.go 中的 New 函数中，注册当前需要启动的 p2p 的协议，具体的协议在 eth/ptotocols 中实现：
+![image](https://github.com/user-attachments/assets/20ca22c8-4e89-40db-b3e9-886540362ab1)
+
+在启动的时候，会先启动 p2p 服务，然后会启动节点的 RPC 服务：
+![image](https://github.com/user-attachments/assets/7ccca72c-66f8-4899-9d40-8610a3e75f0c)
+
+在 Start 方法中，会启动节点本身以及节点的发现服务：
+![image](https://github.com/user-attachments/assets/50888072-00f5-4a49-aed2-6a376ea6f0f6)
+
 
 <!-- Content_END -->
