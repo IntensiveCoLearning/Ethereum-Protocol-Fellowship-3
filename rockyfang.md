@@ -78,6 +78,11 @@ timezone: UTC+8
 - 学习Gas 是如何计算的，为什么 Gas 会波动，如何创建 Gas 高效的智能合约
 - 开始研究EVM官方文档 https://ethereum.org/zh/developers/docs/evm/
 
+### 2025.03.18
+
+笔记整理：https://github.com/rockyfang2024/Web3Learn/tree/main/ETH%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0
+
+- 学习EVM的世界状态
 
 
 <!-- Content_END -->
