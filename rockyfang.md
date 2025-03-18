@@ -83,6 +83,15 @@ timezone: UTC+8
 笔记整理：https://github.com/rockyfang2024/Web3Learn/tree/main/ETH%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0
 
 - 学习EVM的世界状态
+- 了解到了EVM每次执行一个合约或交易都会创建一个虚拟机实例，并且EVM是基于栈的虚拟机，最大深度为1024。若一个合约的调用深度超过1024，会执行失败。
+
+
+### 2025.03.19
+
+笔记整理：https://github.com/rockyfang2024/Web3Learn/tree/main/ETH%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0
+
+- 学习到了交易可能失败的场景
+- 了解了GasLimit
 
 
 <!-- Content_END -->
