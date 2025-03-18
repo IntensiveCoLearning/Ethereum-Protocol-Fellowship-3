@@ -225,7 +225,7 @@ timezone: UTC+1
 </details>
 
 ### 2025.03.17
-
+- Participated Portal Network implementer call and notes: https://hackmd.io/@chloezhux/H1x36pYIJg
 
 ### 2025.03.18
 
