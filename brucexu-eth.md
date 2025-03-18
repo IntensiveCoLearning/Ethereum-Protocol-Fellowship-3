@@ -400,9 +400,23 @@ The process of signing a file: sign(private key, hash of the file) = signature -
 
 The process of verifying a file: verify(public key, S) = R' -> compare if R' = R to verify if the signature is correct -> to verify the signer owns private key
 
-TODO Step 3: Why Use ECDSA?
+# 2025.03.18
 
+https://www.instructables.com/Understanding-how-ECDSA-protects-your-data/
 
+ECDSA uses only integer mathematics, there are no floating points.
+
+Computers use 'bits' to represent data, 4 bits can represent values 0 to 15. ECDSA will use 160 bits total, a very huge number. The underlaying mathematical construct is modulus.
+
+ECDSA is used with a SHA1 cryptographic hash, with SHA1 hash algorithm, it will always be 20 bytes (160 bits). For a given file, SHA1 hash it and get 20 bytes, ECDSA signs the hash, if the data changes, the hash changes, and the signature isn't valid anymore.
+
+The Elliptic Curve cryptography is based on an equation of the form: y^2 = (x^3 + a * x + b) mod p
+
+The ECDSA equation gives us a curve with a finite number of valid points on it (N) because the Y axis is bound by the modulus (p) and needs to be a perfect square (y^2) with a symmetry on the X axis. We have a total of N/2 possible, valid x coordinates without forgetting that N < p.
+
+![image](https://github.com/user-attachments/assets/ee6b687b-6df1-4b76-a617-96183411e95e)
+
+TODO Step 7: Point Addition
 
 
 
