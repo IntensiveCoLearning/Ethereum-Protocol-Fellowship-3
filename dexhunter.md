@@ -209,5 +209,9 @@ TODO: will read more tomorrow about smart contract and world computer concept
 
 [1]: https://github.com/ethereumbook/ethereumbook/blob/develop/02intro.asciidoc
 
+### 2025.03.18
+
+
+
 
 <!-- Content_END -->
