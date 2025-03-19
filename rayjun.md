@@ -444,5 +444,35 @@ devp2p 有三个核心组件：
 
 基于 devp2p 实现的协议的都在 `eth/protocols` 中，其中 `eth/protocols/eth` 协议是其中主要的一个实现，主要用于区块和交易的传播，在之前分析交易源码的流程中已经说到这个协议的作用。还有 snap 协议用于具体节点的快速同步，代码实现在 `eth/protocols/snap`。
 
+### 2025.03.19
+eth 是 devp2p 的一个子协议，用于管理节点的区块、交易和状态数据的传播，当前协议的版本号是 eth68。
+
+通过上面的代码可以知道以太坊节点在启动的时候会通过 `eth/backend.go` 中的 `Ptotocols` 方法来获取当前需要启动的协议。
+
+eth 中节点和对等发现功能的实现其实就是封装了 devp2p 中的实现，并在这个基础上增加了 eth 协议的功能：
+![Clipboard_Screenshot_1742350589](https://github.com/user-attachments/assets/73405660-7318-4c3e-86cd-42d4f62f5894)
+
+节点的信息被组装成 enr，发现新的节点之后，将会将 enr 添加到路由表中，然后由 discv5 来实现路由表的更新：
+![Clipboard_Screenshot_1742350599](https://github.com/user-attachments/assets/14077133-a5c5-4e80-ab86-08e126ea8555)
+
+通过 MakeProtocols 方法来组装具体的协议：
+![Clipboard_Screenshot_1742350613](https://github.com/user-attachments/assets/65df1211-1ff7-49cf-94a1-97f2b7b68199)
+
+为每一个协议启动一个 peer 节点，并且为每个 peer 配置一个处理消息的 Handler：
+![Clipboard_Screenshot_1742350624](https://github.com/user-attachments/assets/4531e726-b138-4dfc-aaff-0b3531626d7b)
+
+在 RunPeer 方法中会启动 peer 节点的握手流程，p2p 的握手流程其实就是把节点自身的信息发布出去：
+![Clipboard_Screenshot_1742350635](https://github.com/user-attachments/assets/4d1781cd-5404-49d4-b6e9-21efadb20823)
+![Clipboard_Screenshot_1742350648](https://github.com/user-attachments/assets/9a16eb10-2e01-42d0-8a72-4f2634c126ee)
+
+Peer 节点启动之后，会持续处理消息：
+![Clipboard_Screenshot_1742350664](https://github.com/user-attachments/assets/d27b9694-f8da-45a4-8bda-cedd97c3a10d)
+
+当前用来处理消息的协议是 eth68:
+![Clipboard_Screenshot_1742350675](https://github.com/user-attachments/assets/73f399bc-8503-44c9-bef1-a64e88803669)
+
+下面是当前 eth68 协议支持的消息类型，实际上 NewBlockMsg 和 NewBlockHashesMsg 已经不在执行层处理了，而是在共识层处理，所以这里的两个 Handler 为空：
+![Clipboard_Screenshot_1742350690](https://github.com/user-attachments/assets/eff712ca-c903-403b-b96d-ff1aca7e5dba)
+
 
 <!-- Content_END -->
