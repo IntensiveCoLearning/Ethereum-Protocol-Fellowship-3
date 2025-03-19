@@ -418,6 +418,77 @@ The ECDSA equation gives us a curve with a finite number of valid points on it (
 
 TODO Step 7: Point Addition
 
+# 2025.03.19
+
+Point Addition 的定义中，曲线上任选 P 和 Q 划线，可以得到跟曲线相交的 R 点，R 的 x 轴对称点是 -S，然后将定义表示为：P + Q = -S，这个就是 Point Addition。注意这里的 + 并不是坐标的相加。
+
+Point multiplication 就是将多个 P 相加，例如 P + P + P 就是 k*P，然后计算规则 P 点跟曲线的相交点根据 X 轴反转，然后继续。
+
+![image](https://github.com/user-attachments/assets/9aae3d5c-1d84-4e1a-89f6-0aedaf392c18)
+
+这个曲线的斜率和相交点的定义是怎么来的？同一个 P 点，为什么会落在这个地方？是最近的吗？还是？
+
+如果 P 和 Q 不一样，则是连起来。如果 P = Q，则是切线，就是点垂直于线的切线。
+
+The Trap Door Function。如果有一个点 R = k*P，你可能知道 R 和 P，但是你不可能知道 k，因为是不可逆的。k 的选值通常是一个 256 位或者更大的值，如果你知道 k，那么可以通过高效算法快速生成 R，如果你不知道，遍历爆破需要的时间可能会很长。由此保护 k 的安全性。
+
+看来基本上密码学都是靠不可逆的算法来保护某一个关键信息和变量。
+
+```
+// 简单模拟的点加法，群单位设为 {x: 0, y: 0}
+function addPoints(P, Q) {
+  return { x: P.x + Q.x, y: P.y + Q.y };
+}
+
+// 暴力法：依次加 k 次 P
+function bruteForceMultiply(P, k) {
+  let R = { x: 0, y: 0 }; // 单位元素
+  for (let i = 0; i < k; i++) {
+    R = addPoints(R, P);
+  }
+  return R;
+}
+
+// 双倍加法算法：使用二进制展开法
+function doubleAndAdd(P, k) {
+  let R = { x: 0, y: 0 }; // 定义单位元素
+  let Q = P;
+  let n = k;  // 使用局部变量保存 k 的值，避免修改原始 k
+  while (n > 0) {
+    if (n & 1) {
+      R = addPoints(R, Q);
+    }
+    Q = addPoints(Q, Q); // 点翻倍
+    n = n >> 1;
+  }
+  return R;
+}
+
+// 测试参数
+const P = { x: 1, y: 1 };
+const k = 100000000;
+
+// 测试暴力方法
+console.time("BruteForce");
+const resultBruteForce = bruteForceMultiply(P, k);
+console.timeEnd("BruteForce");
+
+// 测试双倍加法方法
+console.time("DoubleAndAdd");
+const resultDoubleAndAdd = doubleAndAdd(P, k);
+console.timeEnd("DoubleAndAdd");
+
+console.log("BruteForce Result:", resultBruteForce);
+console.log("DoubleAndAdd Result:", resultDoubleAndAdd);
+```
+
+上面是一段模拟的椭圆曲线，然后设置 k = 100000000，暴力计算和双倍加法的时间差异巨大：
+
+![image](https://github.com/user-attachments/assets/536012b5-9d85-42aa-bb74-a689ac690a2a)
+
+现实情况中 k 的值通常为 256 位以上！刚刚运算的只有 9 位。这种即使知道原始点和目标点，也无法找到被乘数的情况，是ECDSA算法安全性的基础，这一原理被称为"单向陷门函数"。
+
+
 
 
 <!-- Content_END -->
