@@ -211,6 +211,34 @@ TODO: will read more tomorrow about smart contract and world computer concept
 
 ### 2025.03.18
 
+精通以太坊第三章[1]
+
+几个客户端的实现
+1. Parity, written in Rust4
+2. Geth, written in Go
+3. cpp-ethereum, written in C++
+4. pyethereum, written in Python
+5. Mantis, written in Scala
+6. Harmony, written in Java
+
+[1]: https://github.com/ethereumbook/ethereumbook/blob/develop/03clients.asciidoc
+
+### 2025.03.19
+
+第四章，关于密码学，内容比较多，分几天来看完[1]
+
+椭圆曲线密码学[2]
+
+![](https://github.com/ethereumbook/ethereumbook/blob/develop/images/ec_over_small_prime_field.png)
+
+* OpenSSL
+* Bitcoin's libsecp256k1 -> secp256k1 elliptic curve 
+* Hash Function
+
+
+
+[1]: https://github.com/ethereumbook/ethereumbook/blob/develop/04keys-addresses.asciidoc
+[2]: https://github.com/ethereumbook/ethereumbook/blob/develop/04keys-addresses.asciidoc#elliptic_curve
 
 
 
