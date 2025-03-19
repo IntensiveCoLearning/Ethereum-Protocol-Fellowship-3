@@ -442,11 +442,59 @@ timezone: UTC+8
       - **与 Execution 层的交互优化**，提升网络运行效率。
       - **技术社区的广泛参与**，推动以太坊协议的演进。
 
-
-
-
-
 ### 2025.03.19
+#### 9th-kurtosis
+* **安装kurtosis CLI**
+```
+echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
+sudo apt update
+sudo apt install kurtosis-cli
+```
+
+* **本地测试**
+    * 启动本地开发网络(my-testnet为网络命名)：
+        ```
+        kurtosis run --enclave my-testnet github.com/ethpandaops/ethereum-package
+
+        ```
+    * 访问服务Shell：
+        ```
+        kurtosis service shell my-testnet el-1-geth-lighthouse
+
+        ```
+    * 连接到 Geth 控制台:
+        ```
+        geth --datadir /data/geth/execution-data/ attach
+
+        ```
+    * 监听区块信息
+        ```
+        var filter = eth.filter('latest');
+        filter.watch(function(error, result) {
+            if (!error) {
+                var block = eth.getBlock(result, true);
+                console.log(block);
+            }
+        });
+        ```
+* **常用命令**
+
+  * **引擎管理**
+    * `kurtosis engine status`：查看当前 Kurtosis 引擎的状态。
+    * `kurtosis engine logs`：查看 Kurtosis 引擎的日志。
+    * `kurtosis engine start`：启动 Kurtosis 引擎。
+    * `kurtosis engine stop`：停止 Kurtosis 引擎。
+    * `kurtosis engine clean`：清理所有环境和关联资源，并停止引擎。
+
+  * **环境管理**
+    * `kurtosis run <package>`：通过 GitHub URL 或本地路径启动指定的包。
+    * `kurtosis enclave rm -f <enclave-name>`：删除指定名称的环境及其资源。
+    * `kurtosis clean -a`：清理所有环境和资源。
+
+  * **服务管理**
+    * `kurtosis service shell <enclave-name> <service-name>`：获取服务的 shell 访问权限。
+    * `kurtosis service logs <enclave-name> <service-name>`：查看服务的日志。
+
 
 
 
