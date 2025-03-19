@@ -183,4 +183,37 @@ Execution Layer(執行層)和Consensus Layer(共識層)共同合作來處理交�
 - 協調 驗證者獎勵和懲罰（Slashing）
 
 
+### 2025.03.19
+Reth 是什麼: Reth是一個用 Rust 實作的 以太坊（Ethereum）執行層（Execution Layer）客戶端，由 Paradigm 開發。它是一個高效能、模組化、開放原始碼的以太坊節點軟體，目標是提供更快、更安全、更易於維護的以太坊客戶端。
+
+為什麼需要 Reth: 目前以太坊的執行層（Execution Layer）主要有以下幾個客戶端：
+
+- Geth（Go Ethereum，最多節點使用）
+- Nethermind（C#）
+- Besu（Java）
+- Erigon（Go，專注於存儲與效能）
+- Reth（Rust）
+
+Reth 的主要特點
+- 高效能
+  - Rust 的系統級語言特性，讓 Reth 具有更好的記憶體管理與執行效能。
+  - 針對交易處理與區塊同步進行優化，比 Geth 更快。
+- 模組化設計
+  - Reth 的核心架構是模組化的，可以靈活地與不同的以太坊基礎設施（如共識層、存儲後端）整合。
+  - 易於擴展與自訂，適合開發者社群參與。
+- 對開發者友好
+  - 使用 Rust 編寫，提供更好的型別安全性與錯誤處理機制，降低 Bug 風險。
+  - 原始碼開放，任何人都可以參與開發，提升以太坊生態系統的多樣性。
+- 更快的同步速度
+  - 針對區塊數據存儲與同步進行優化，相比 Geth，能更快地加入網絡並完成區塊驗證。
+
+Reth 在以太坊生態中的角色: Reth 主要負責 執行層（Execution Layer），處理：
+- 交易執行
+- 智能合約運行
+- EVM 計算
+- 狀態管理（State Management）
+
+而它需要搭配 共識層（Consensus Layer） 客戶端（如 Prysm、Lighthouse、Teku、Nimbus）來運作，因為以太坊現在是 PoS（Proof of Stake）機制，執行層與共識層必須協同工作。
+
+
 <!-- Content_END -->
