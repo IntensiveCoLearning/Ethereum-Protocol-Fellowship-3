@@ -488,7 +488,7 @@ console.log("DoubleAndAdd Result:", resultDoubleAndAdd);
 
 现实情况中 k 的值通常为 256 位以上！刚刚运算的只有 9 位。这种即使知道原始点和目标点，也无法找到被乘数的情况，是ECDSA算法安全性的基础，这一原理被称为"单向陷门函数"。
 
-TODO 看看 EVM 的代码实现。
+TODO 看看 EVM 的代码实现 https://docs.google.com/presentation/d/1_6tKfzWexxCe9og0c-_Qv0BfgSfqdlusXAgkStq3oY8/edit#slide=id.g33f2d85414d_4_0
 
 
 <!-- Content_END -->
