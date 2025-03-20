@@ -93,5 +93,11 @@ timezone: UTC+8
 - 学习到了交易可能失败的场景
 - 了解了GasLimit
 
+### 2025.03.20
+
+笔记整理：https://github.com/rockyfang2024/Web3Learn/tree/main/ETH%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0
+
+- 学习了ETH的共识层和执行层的概念及作用
+- 了解信标链的概念
 
 <!-- Content_END -->
