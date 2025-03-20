@@ -215,5 +215,50 @@ Reth 在以太坊生態中的角色: Reth 主要負責 執行層（Execution Lay
 
 而它需要搭配 共識層（Consensus Layer） 客戶端（如 Prysm、Lighthouse、Teku、Nimbus）來運作，因為以太坊現在是 PoS（Proof of Stake）機制，執行層與共識層必須協同工作。
 
+### 2025.03.20
+#### Teku 共識客戶端
+Teku 是由 ConsenSys 開發的一款 以太坊 2.0（信標鏈）共識客戶端，專門針對機構級別的需求設計，支持 驗證者管理、信標鏈運行、共識協議、與執行客戶端交互 等核心功能。Teku 以 Java 編寫，並基於 Apache 2.0 開源授權，是以太坊 2.0 主要的共識客戶端之一。
 
+Teku 的特色
+- 高可靠性：專為 機構和專業驗證者 設計，適合大型運營商。
+- 安全性高：支持 遠端簽名、密鑰管理與監控工具（如 Prometheus）。
+- 靈活性強：支持 單節點、多節點運行，可與多種執行客戶端（如 Geth、Erigon）搭配使用。
+- 標準 API：符合 Ethereum JSON-RPC、REST API、Engine API，便於集成。
+
+Teku 架構
+1. P2P 網絡層
+  - 使用 Libp2p 網絡協議與其他節點進行通信
+  - 負責區塊同步、Gossip 區塊傳播、驗證者資訊交換
+2. 信標鏈存儲（Beacon Chain Storage）
+  - 儲存 信標鏈區塊、驗證者狀態、隨機性數據，確保歷史可追溯
+  - 提供 SQLite、LevelDB 兩種存儲選項
+3. 共識機制
+  - Casper FFG（Finality Gadget）：確保區塊最終性
+  - LMD-GHOST（Fork Choice Rule）：選擇權重最高的區塊作為主鏈
+4. 驗證者管理
+  - 支持 單節點多驗證者，可運行數千個驗證者
+  - 內建 Slashing 監測，防止驗證者被雙重簽名處罰
+5. Engine API（與執行客戶端交互）
+  - 負責與 執行客戶端（如 Geth） 進行通信，獲取交易數據、提交區塊
+  - 透過 JSON-RPC 和 REST API 提供外部控制接口
+
+Teku 的工作流程
+1. 啟動並同步信標鏈
+  - 連接到 P2P 網絡，從其他節點獲取區塊數據
+  - 檢查區塊的有效性，更新本地信標鏈存儲
+2. 管理驗證者
+  - 檢查驗證者的押注（Stake）狀態，確保符合 PoS 要求
+  - 根據 LMD-GHOST 規則選擇最佳區塊進行投票
+3. 與執行客戶端協作
+  - 透過 Engine API 與執行客戶端同步交易數據
+  - 驗證新交易，將合法的交易打包成區塊
+4. 提交區塊與投票
+  - 若節點被選為 提議者（Proposer），則負責提交區塊
+  - 其他驗證者則對區塊進行 Attestation（投票），確保共識達成
+5. 罰則與獎勵
+  - 若驗證者離線、雙重簽名，會被 Slashing（罰款）
+  - 若驗證者表現良好，則獲得 ETH 獎勵
+
+
+  
 <!-- Content_END -->
