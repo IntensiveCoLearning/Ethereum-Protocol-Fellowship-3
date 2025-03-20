@@ -475,4 +475,25 @@ Peer 节点启动之后，会持续处理消息：
 ![Clipboard_Screenshot_1742350690](https://github.com/user-attachments/assets/eff712ca-c903-403b-b96d-ff1aca7e5dba)
 
 
+### 2025.03.20
+对于交易的一些补充：
+
+对于 blob 交易或者一些大的交易：
+![image](https://github.com/user-attachments/assets/9a36f93b-58bb-4a8e-8c8b-179c460ef0cb)
+
+在实例化 handler 的时候，会指定好从其他节点获取交易的方式，会通过 `eth/fetcher 中的 TxFetcher 去获取远端的交易，TxFetcher 会通过这里的 fetchTx 去获取远端的交易，实际是调用了 `eth/protocols/eth` 协议中实现的方法去获取交易：
+
+![image](https://github.com/user-attachments/assets/d05104c6-5e72-44dd-93a3-3b0551aa8743)
+
+通过发送 GetPooledTransactionsMsg 消息，然后收到 PooledTransactionsMsg 的响应：
+![image](https://github.com/user-attachments/assets/39290c4c-1c66-4c90-a879-2f61dc7a77cc)
+
+最终还是由 txFetcher 的  Enqueue 来处理：
+![image](https://github.com/user-attachments/assets/a7ff66a6-2bb1-4c88-a024-ad4db6f91093)
+
+然后调用 addTxs 来将交易添加到交易池，这个方法在 newHandler 中已经声明，就是调用交易池的 Add 方法来将交易打包进交易池：
+![image](https://github.com/user-attachments/assets/e073bbe2-d070-4a95-8ab3-b8118f3c746b)
+
+
+
 <!-- Content_END -->
