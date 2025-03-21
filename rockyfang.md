@@ -106,5 +106,6 @@ timezone: UTC+8
 笔记整理：https://github.com/rockyfang2024/Web3Learn/tree/main/ETH%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0
 
 - 继续学习智能合约solidity
+- 学习ETH和layer2
 
 <!-- Content_END -->
