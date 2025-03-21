@@ -260,5 +260,27 @@ Teku 的工作流程
   - 若驗證者表現良好，則獲得 ETH 獎勵
 
 
-  
+### 2025.03.21
+#### Ethereum DevOps
+
+**1. 什麼是 Ethereum DevOps？**
+
+Ethereum DevOps 團隊的核心職責是測試、部署與維護 Ethereum 網路的升級，確保新功能的推出不會影響區塊鏈的安全性與穩定性
+在 Ethereum 開發與測試中，DevOps 的挑戰包括：
+- 需要測試 超過 20 種不同的 Execution Clients（ELs）和 Consensus Clients（CLs）組合，確保它們相容
+- 偵錯與溝通的困難度高，不同客戶端的問題可能影響整個網絡
+- 可靠的測試方式尚在演進，過去僅針對單一客戶端進行測試，現在需要全面測試
+- 升級影響層面廣，所有未來的升級都會繼承過去的複雜性，因此 DevOps 必須建構可重複使用的測試流程。
+
+
+**2. DevOps 測試環境：Devnets（開發測試網）**
+
+什麼是 Devnet？
+- Devnet 是一個 Ethereum 的測試環境，用來模擬主網的行為，讓開發者能夠測試硬分叉或升級前的變更
+- 內容包括
+  - Execution Layer（EL）、Consensus Layer（CL） 和 驗證者（Validators）
+  - 自訂測試環境，支援開發者測試新功能，不影響主網
+  - 完全可控的驗證者集，允許測試極端情境（edge cases）
+- Devnet 是公開的，社群開發者可以一起測試與回報錯誤
+
 <!-- Content_END -->
