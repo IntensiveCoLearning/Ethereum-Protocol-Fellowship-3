@@ -494,6 +494,45 @@ Peer 节点启动之后，会持续处理消息：
 然后调用 addTxs 来将交易添加到交易池，这个方法在 newHandler 中已经声明，就是调用交易池的 Add 方法来将交易打包进交易池：
 ![image](https://github.com/user-attachments/assets/e073bbe2-d070-4a95-8ab3-b8118f3c746b)
 
+### 2025.03.21
+snap 协议用来完成状态的快速同步，在 full 的同步模式一下，节点同步到区块之后，会通过执行区块的中的交易来恢复状态数据库，但是这样会导致非常耗时，而 snap 协议在 snap 的同步模式下会启用，允许节点快速恢复状态数据库，而不需要从创世区块开始验证每个区块。
+
+在节点启动时，在 `eth/backend.go` 的 newHandler 中，会初始化 snap 协议：
+![image](https://github.com/user-attachments/assets/cf5741f1-3191-4f35-9b73-5d554dbe64da)
+
+![image](https://github.com/user-attachments/assets/2393bc9c-b924-4960-a6f7-f3edf5e816ce)
+
+在前面讨论 eth 协议时由说道每启动一个协议节点，就会创建 peer 节点，并且会与其他的节点进行握手通信，在这个过程中，也会在 snap 协议上握手，具体实现在 eth/handler.go 的 runEthPeer 方法中：
+![image](https://github.com/user-attachments/assets/b7cbb1c0-5bb9-4cca-8d1a-e89815b8014b)
+
+在 snap 协议中，Task 是一个很重要的概念，Task 有三类，**accountTask、storageTask、healTask。**
+
+- accountTask：代表账户快照的同步任务。每个 **`accountTask`** 负责处理一段账户范围的同步，包括从远程对等节点获取账户数据。
+- storageTask：代表存储快照的同步任务。它负责处理特定账户的存储数据的同步，storageTask 会作为 accountTask 的子任务存在。
+- healTask：代表修复任务，用于处理同步过程中状态不一致或者错误的修复。
+
+其中同步过程以 accountTask 为维度拆分。
+![image](https://github.com/user-attachments/assets/ff3b0a83-9254-4c71-8f8e-d85d2ee711f9)
+![image](https://github.com/user-attachments/assets/86aa6219-ac8a-4cdc-a3f1-b8668ab06b54)
+![image](https://github.com/user-attachments/assets/c9a62b7d-9ef1-4a86-8746-1770b62e0da8)
+
+状态同步的逻辑会通过 Sync 方法来完成，root 参数是需要同步的状态树的根哈希值：
+![image](https://github.com/user-attachments/assets/4f6283df-f53f-4e35-a5f9-84e309908aed)
+在开始同步的时候，会创建一个 healTask：
+![image](https://github.com/user-attachments/assets/a5ec86f1-d114-47fd-8dc2-296432c53237)
+
+调用 loadSyncStatus() 方法从数据库中检索之前的同步状态，如果状态不存在，那么就重新启动一个的状态同步过程：
+![image](https://github.com/user-attachments/assets/ecca09c1-9922-47bb-a140-56d4c45566b4)
+
+如果所有的同步任务和修复任务都完成了，则结束同步流程：
+![image](https://github.com/user-attachments/assets/f58bcf9b-d1b5-41a8-917b-c5ff30cc5f53)
+
+这里开始进入通过的核心逻辑，通过 for 循环保证同步的持续进行，在同步的过程中也会判断任务和修复过程是否完成，如果完成了，就会退出同步过程。通过会将任务分发给已经组成的 peer 节点去完成：
+![image](https://github.com/user-attachments/assets/0a3fcd21-ee2c-41d6-a0d4-a48188e2c37c)
+
+通过 select 机制来处理各个任务的结果：
+![image](https://github.com/user-attachments/assets/1a7d9a3f-2a1d-4431-93d8-22e4afaac3a1)
+
 
 
 <!-- Content_END -->
