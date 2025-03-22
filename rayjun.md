@@ -534,5 +534,38 @@ snap 协议用来完成状态的快速同步，在 full 的同步模式一下，
 ![image](https://github.com/user-attachments/assets/1a7d9a3f-2a1d-4431-93d8-22e4afaac3a1)
 
 
+### 2025.3.22
+**`downloader`** 模块的主要目标是从远程对等节点下载区块和相关数据，以确保本地节点的区块链状态与网络中的最新状态保持一致。该模块支持不同的同步模式，包括完整同步和快照同步。
+
+当前 go-ethereum 只支持了两种同步模式：
+
+- FullSync
+- SnapSync
+
+downloader 同样在 `eth/handler.go` 的 newHandler 中初始化：
+![image](https://github.com/user-attachments/assets/ca632341-abb7-487e-8671-694e43849b7d)
+
+初始化状态同步的框架：
+![image](https://github.com/user-attachments/assets/86230535-b0d0-494e-b3e6-4764eac4bb6e)
+
+然后启动同步：
+![image](https://github.com/user-attachments/assets/4ed14f53-1a97-40cf-95ef-aad0028e0577)
+
+在接收到新区块头事件之后，就会开始同步：
+![image](https://github.com/user-attachments/assets/3176b8cb-9593-48ff-8bd2-472226cc23ff)
+
+最终会调用 resume 方法来拉取区块和状态：
+![image](https://github.com/user-attachments/assets/5bf63dd0-6370-4c26-8eed-ea04c59a2402)
+
+然后调用 downloader 的 synchronise 方法来真正同步数据：
+![image](https://github.com/user-attachments/assets/cbd3883c-d336-4393-9e27-de83a33787e6)
+
+然后调用了 syncToHead 方法：
+![image](https://github.com/user-attachments/assets/101dd22b-ebdb-4e22-8c01-d226a2ea5823)
+
+在这个方法中定义了各类 fetchers 去拉取不同的数据：
+![image](https://github.com/user-attachments/assets/f0be8fe5-e85d-466a-9a63-26b61c88c1e9)
+
+
 
 <!-- Content_END -->

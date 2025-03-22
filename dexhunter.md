@@ -236,10 +236,76 @@ TODO: will read more tomorrow about smart contract and world computer concept
 * Hash Function
 
 
-
 [1]: https://github.com/ethereumbook/ethereumbook/blob/develop/04keys-addresses.asciidoc
 [2]: https://github.com/ethereumbook/ethereumbook/blob/develop/04keys-addresses.asciidoc#elliptic_curve
 
 
+### 2025.03.22
+
+* two types of accounts
+    * externally owned accounts (EOAs) <- private key + address + signature
+    * contracts <- smart contract code (executed by EVM)
+
+#### Based on [chapter 5](https://github.com/ethereumbook/ethereumbook/blob/develop/05wallets.asciidoc)
+
+Ethereum wallets serve as the primary user interface to Ethereum, with two main aspects:
+- **For users**: Applications that manage keys, track balances, and create/sign transactions
+- **For developers**: Systems for key management and storage
+
+Despite the name, wallets don't actually contain ether or tokens – these assets exist on the blockchain. Wallets hold the keys that provide control over these assets.
+
+Wallet Technology Types:
+
+##### 1. Nondeterministic (Random) Wallets
+- Each key is independently generated from a different random number
+- Also known as "Just a Bunch of Keys" (JBOK) wallets
+- More difficult to back up and manage
+- Example: Keystore files (JSON-encoded, encrypted by passphrase)
+
+##### 2. Deterministic (Seeded) Wallets
+- All keys derived from a single master key (seed)
+- A single backup at creation secures all funds
+- Seed can be encoded as mnemonic code words for easier backup
+
+##### 3. Hierarchical Deterministic (HD) Wallets
+- Based on BIP-32 standard
+- Keys derived in a tree structure (parent keys → child keys → grandchild keys)
+- Provides organizational structure and improved security
+
+
+Modern wallets typically implement several industry standards:
+
+##### BIP-39: Mnemonic Code Words
+- Creates a human-readable backup (12-24 words)
+- Random entropy → checksum → encode as words → derive seed
+- Optional passphrase adds security (but increases risk of fund loss if forgotten)
+
+##### BIP-32: Hierarchical Deterministic Wallets
+- Creates tree-like structure of keys
+- Extended keys (xprv, xpub) can derive child keys
+- Hardened derivation prevents chain code compromise
+
+##### BIP-43/44: Standardized HD Wallet Structure
+- Defines purpose and path for HD wallets
+- Standard path: m/purpose'/coin_type'/account'/change/address_index
+- For Ethereum: m/44'/60'/0'/0/x (where x is the address index)
+
+#### Key Concepts
+
+- **Extended Keys**: Parent keys that can derive child keys (with chain code)
+- **Hardened Derivation**: Breaks parent-child relationship to improve security
+- **HD Wallet Path**: Naming convention for identifying keys in the tree (e.g., m/44'/60'/0'/0/2)
+- **Mnemonic Words vs. Brainwallets**: Mnemonics are generated randomly by the wallet, not chosen by the user
+
+#### Best Practices
+
+For implementing Ethereum wallets, build an HD wallet with a seed encoded as mnemonic code, following BIP-32, BIP-39, BIP-43, and BIP-44 standards for maximum security, flexibility, and compatibility.
+
+#### Security Considerations
+
+- Always back up your seed phrase (mnemonic words) in a secure, physical location
+- Never store your seed phrase digitally
+- Consider using hardware wallets for large amounts of funds
+- If using a passphrase with your mnemonic, ensure it can be recovered by trusted parties if needed
 
 <!-- Content_END -->
