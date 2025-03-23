@@ -526,7 +526,7 @@ bit、byte、KB、kb、字符串长度、二进制、十六进制、ASCII、UTF-
 1. 160 bit 二进制使用十六进制表示会有多少位数字？因为 1 位十六进制可以表示 4 位二进制，所以 160 bit 二进制会有 160 位数字，可以浓缩成 40 位十六进制数据，所以字符长度是 40 位。然后底层存储空间是 160 bits / 8 = 20 bytes。
 2. Solidity 的数据结构有一种定长字节数组 bytes1 到 bytes32，在存储英文、地址、Hash 的时候，内容字符串长度就等同于 bytes 长度。如果内容包括复杂字符，则无法对应。bytes 越小，实际占用的存储空间就小，降低 Gas fee。
 
-# 2025.3.21
+# 2025.03.21
 
 We set 'dA' as the private key (random number) and 'Qa' as the public key (a point), so we have : Qa = dA \* G (where G is the point of reference in the curve parameters).
 
@@ -625,5 +625,9 @@ n = FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 // 是椭�
 - 算法的时间复杂度是 O(log p)，比暴力尝试 O(p)要高效得多
 
 这就是为什么扩展欧几里得算法能够高效地计算乘法逆元。它利用了辗转相除的思想，通过递归的方式快速找到结果。
+
+# 2025.03.22
+
+TODO 学习 7720 https://hackmd.io/@colinlyguo/SyAZWMmr1x https://mp.weixin.qq.com/s/WjpPNKEVlxlCSz1WyHH4tw
 
 <!-- Content_END -->
