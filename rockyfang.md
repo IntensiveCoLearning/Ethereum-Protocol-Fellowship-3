@@ -114,4 +114,12 @@ timezone: UTC+8
 
 - 继续学习智能合约solidity
 
+### 2025.03.23
+
+笔记整理：https://github.com/rockyfang2024/Web3Learn/tree/main/ETH%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0
+
+- 学习智能合约solidity的一些入门程序
+
+
+
 <!-- Content_END -->
