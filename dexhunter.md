@@ -308,4 +308,140 @@ For implementing Ethereum wallets, build an HD wallet with a seed encoded as mne
 - Consider using hardware wallets for large amounts of funds
 - If using a passphrase with your mnemonic, ensure it can be recovered by trusted parties if needed
 
+### 2025.03.23
+
+Transactions are signed messages originated by externally owned accounts (EOAs), transmitted through the Ethereum network, and recorded on the blockchain. They are the only mechanism that can:
+- Trigger state changes in Ethereum
+- Cause smart contracts to execute
+
+A transaction contains the following data:
+
+- **Nonce**: A sequence number issued by the originator to prevent message replay
+- **Gas price**: Amount of ether (in wei) the originator is willing to pay per unit of gas
+- **Gas limit**: Maximum amount of gas the originator is willing to buy
+- **Recipient**: Destination Ethereum address
+- **Value**: Amount of ether (in wei) to send
+- **Data**: Variable-length binary data payload
+- **v, r, s**: Components of the ECDSA digital signature
+
+*All transactions are serialized using Recursive Length Prefix (RLP) encoding.*
+
+The nonce is critical for two reasons:
+1. **Transaction ordering**: Ensures transactions from the same account are processed in the order they were created
+2. **Replay protection**: Makes each transaction unique, preventing duplicated payments
+
+*Nonces are tracked sequentially for each account. The nonce for a new transaction must be exactly one higher than the previous transaction's nonce.*
+
+Tracking Nonces:
+- Use `web3.eth.getTransactionCount(address)` to find the current nonce
+- For multiple rapid transactions, maintain your own nonce counter
+- Parity offers `parity_nextNonce` for more reliable nonce tracking
+
+Nonce Gaps and Concurrency Issues:
+- Missing nonces will cause subsequent transactions to be held in the mempool
+- Duplicate nonces will cause one transaction to be accepted and one rejected
+- Concurrency can cause problems when multiple systems generate transactions from the same account
+
+Gas is Ethereum's mechanism for:
+- Measuring computational resource usage
+- Preventing DoS attacks
+- Allocating resources in a fair manner
+
+Two important components:
+- **Gas price**: How much ether per unit of gas (set by the transaction creator)
+- **Gas limit**: Maximum gas units the transaction can consume
+
+*Simple ether transfers between EOAs always cost exactly 21,000 gas. Contract interactions vary in cost depending on complexity.*
+
+The recipient is specified in the `to` field:
+- Can be an EOA or contract address
+- No validation is performed on this field
+- Sending to an invalid address effectively "burns" the ether
+
+Transactions can contain:
+- **Value only**: A payment
+- **Data only**: A contract invocation
+- **Both**: A payment and contract invocation
+- **Neither**: Technically valid but not useful
+
+For contract interactions, the data field typically contains:
+- Function selector: First 4 bytes of the Keccak-256 hash of the function signature
+- Function arguments: Encoded according to ABI specification
+
+Special Transaction: Contract Creation
+
+Contracts are created by sending transactions to the special "zero address" (0x0):
+- The `to` field is set to 0x0
+- The contract bytecode is included in the data field
+- Optional ether can be included in the `value` field to fund the new contract
+
+Digital Signatures
+
+Transactions are signed using the Elliptic Curve Digital Signature Algorithm (ECDSA). Signatures serve three purposes:
+
+1. **Authorization**: Proves the owner of the private key authorized the transaction
+2. **Non-repudiation**: The proof of authorization is undeniable
+3. **Integrity**: The transaction data cannot be modified after signing
+
+The signature includes three values:
+- **r, s**: The ECDSA signature components
+- **v**: Recovery identifier that helps derive the public key from the signature
+
+ECDSA Mathematics
+
+The ECDSA signature creation process:
+1. Generate an ephemeral (temporary) private key
+2. Derive the corresponding ephemeral public key
+3. The r value is the x coordinate of the ephemeral public key
+4. The s value is calculated using the private key, transaction hash, and ephemeral key
+
+note: *Signature verification can recover the public key without knowing the private key.*
+
+Transaction Signing in Practice
+
+To sign a transaction:
+1. Create a transaction data structure with all fields
+2. RLP-encode the transaction data
+3. Calculate the Keccak-256 hash of the serialized message
+4. Sign the hash with the private key using ECDSA
+5. Append the signature values to the transaction
+
+Offline Signing
+
+For security, transaction signing can be separated from transaction transmission:
+1. Create unsigned transaction on an online system
+2. Transfer to an offline system for signing
+3. Transfer the signed transaction back to an online system for broadcasting
+
+note: *This process, called "offline signing," helps protect private keys by keeping them off internet-connected computers.*
+
+Transaction Propagation
+
+Transactions propagate through the Ethereum network via a flood routing protocol:
+1. The node with the signed transaction validates it
+2. It then transmits the transaction to all its neighbors
+3. Each neighbor validates and retransmits to their neighbors
+4. Within seconds, the transaction reaches all nodes in the network
+
+Recording on the Blockchain
+
+Valid transactions are eventually:
+1. Selected by miners for inclusion in a block
+2. Recorded permanently on the blockchain
+3. Execute their effect on the Ethereum state
+
+Multiple-Signature (Multisig) Transactions
+
+While Ethereum's basic transactions don't directly support multiple signatures, smart contracts can implement multisig functionality:
+- Funds are sent to a contract that enforces signature requirements
+- Multisig contracts can have arbitrary signing conditions
+- The contract only releases funds when conditions are satisfied
+
+EIP-155: Transaction Replay Protection
+
+EIP-155 prevents transaction replay attacks between different Ethereum networks by:
+- Including a chain identifier in the transaction data
+- Modifying the signing algorithm to encode the chain ID in the v value
+- Making it impossible to replay a transaction meant for one network on another
+
 <!-- Content_END -->
