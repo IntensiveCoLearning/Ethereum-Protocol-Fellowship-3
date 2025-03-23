@@ -283,4 +283,26 @@ Ethereum DevOps 團隊的核心職責是測試、部署與維護 Ethereum 網路
   - 完全可控的驗證者集，允許測試極端情境（edge cases）
 - Devnet 是公開的，社群開發者可以一起測試與回報錯誤
 
+### 2025.03.23
+#### Precompile
+Precompile（預編譯合約）是一組特殊的智能合約，這些合約並不是用 Solidity 或 Vyper 編寫的，而是直接在以太坊客戶端（如 Geth、Nethermind、Besu）內部實作，並且擁有固定的合約地址（0x01 到 0x0A，EIP 擴展後可更多）
+
+這些預編譯合約主要用於執行高計算成本的加密操作，如哈希、簽名驗證等，它們比一般的 Solidity 智能合約執行得更快且成本更低，因為它們直接運行在 EVM（Ethereum Virtual Machine）的內部，而不是透過 Solidity 編譯後的 EVM 字節碼（Bytecode）
+
+1. Precompile 的特點
+- 固定地址：這些合約的地址在所有以太坊網絡（如主網、測試網）都是一致的
+- 原生 EVM 支援：直接由 EVM 內部執行，而不是由 Solidity 編寫的普通合約
+- 更高效能：相較於 Solidity 編寫的等效合約，Precompile 執行速度更快，消耗更少 Gas
+- 降低 Gas 成本：許多 Precompile 內部的操作如果用 Solidity 來寫，Gas 成本會高得多
+
+2. Precompile 的優勢與限制
+   - 優勢
+     - 比 Solidity 智能合約更快：因為它們直接由 EVM 運行，而不是透過 Solidity 編譯後執行
+     - 降低 Gas 成本：如果這些運算用 Solidity 來寫，成本會高很多，例如 ecrecover 在 Solidity 內部實作會非常昂貴
+     - 標準化：所有以太坊客戶端都支持這些合約，不會因客戶端不同而影響結果。
+   - 限制
+     - 只能執行特定功能：Precompile 不能像 Solidity 那樣自由開發，僅限於內建的函數
+     - 難以擴展：新增 Precompile 需要 Ethereum 改進提案（EIP）並獲得社群共識，例如 blake2f（EIP-152）
+     - 與 Layer 2 兼容性不佳：某些 L2（如 Optimistic Rollup）可能不支持所有 Precompile，影響智能合約兼容性。
+
 <!-- Content_END -->
