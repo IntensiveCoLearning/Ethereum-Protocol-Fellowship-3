@@ -246,4 +246,35 @@ EIP-4844 引入了新的 "data blobs" 来降低 Layer-2 扩容方案的成本。
 
 Blob 数据本身 **不会存入执行层**，而是由共识层存储并保证可用性。
 
+
+### 2025.03.24
+
+#### 卷叠中的燃料费计算
+此处专指EIP-4844后的燃料费计算，此次升级新增了Blob数据结构，这种结构大大节省了L2的燃料费。这些 blobs 是与交易分开存储的大块数据，它们在共识层是可用的，但在执行层不可直接访问.虽然数据 blob 本身存储在共识层，但**触发**和**引用**这些 blob 的操作发生在执行层上的交易中。因此，燃料费的支付仍然通过执行层上的交易来完成。
+
+$$Blob Gas Fee = Blob Base Fee * blobGasUsed$$
+- `BlobBaseFee` 是当前区块的 blob 基础费用。
+- `blobGasUsed` 是与该交易关联的所有 blob 的总 Gas 消耗。每个 blob 都有一个固定的 Gas 成本（例如，每个 blob 131072 字节，对应 1 个 blob gas 单位）。
+
+##### 汇率控制
+ `BlobBaseFee`和EIP-1559中的基础费用不共享一个汇率，以 `wei/blobGasUnit` 为单位。一个`blobGasUnit`对应一个完整的数据 blob (目前大小约为 128 KB)，一个Blob被定义为消耗$2^{17} = 131072$个`BlobGas`单位
+ 
+根据目标 Blob Gas 使用量和最大 Blob Gas 使用量进行调整。如果实际使用的 blob gas 超过目标，blob 基础费用会增加；如果低于目标，blob 基础费用会减少。具体：
+- 目标 Blob 数 (Target Blobs Per Block): 3 个
+- 最大 Blob 数 (Max Blobs Per Block): 6 个
+- 调整公式 (近似描述): Blob 基础费用的调整基于一个指数函数，更具体地说是根据一个与“超出目标 Blob 数量”相关的因子进行调整。
+- 更精确的公式涉及一个累积的超出量 (excess blob gas) 和一个预设的常数。大致来说，当每个区块使用的 Blob 数量超过 3 个时，**Blob 基础费用会指数级增长。当使用量低于 3 个时，Blob 基础费用会线性下降**。
+##### 实例
+假设目前的汇率是`1 weiPerBlobGas`，那么每个Blob的费用只有0.000131Gwei：
+ $$1 \space weiPerBlobGas * 2^{17}BlobGas = 0.000131\space Gwei \space PerBlob$$
+一个Blob可以承担128KB，一笔ETH交易大约是200~300字节，那么：
+$$131072 字节 \div 200 字节 = 655.36(笔)$$
+
+同样一笔交易，在主链上需要大约需要：
+$$Gas=GasLimit*(Base+Priority)=21000*(100+10)Gwei=2310000Gwei=0.00231ETH$$
+而在二层链只需要：
+$$Gas=0.000131\space Gwei \div 655.36=0.0000002\space Gwei=2^{-16}\space ETH$$
+虽然在二层链可能有优先费等其他费用最终不会这么低，但也是一个十分惊人的差距
+
+
 <!-- Content_END -->
