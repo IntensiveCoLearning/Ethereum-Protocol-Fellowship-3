@@ -595,4 +595,35 @@ logdistance(n₁, n₂) = log2(distance(n₁, n₂))
 女巫攻击：女巫攻击是一种常见的网络攻击方式，攻击者通过创建多个虚假身份（或节点）来控制网络中的大部分节点。
 日蚀攻击：日蚀攻击是一种针对 P2P 网络的攻击，攻击者通过控制一个节点的所有入站和出站连接来“遮蔽”该节点。这使得被攻击的节点无法与网络中的其他节点进行有效通信。
 
+### 2025.03.24
+Kademlia 是一种高效的分布式哈希表（DHT）算法，广泛用于点对点（P2P）网络中，特别是在节点发现和数据存储方面。通过节点 ID 来判断两个节点之间的距离，然后会递归地查找这个节点，界限信息使用 K-buckets 数据结构存储
+
+discv5 使用了一种类似 Kademlia 算法的方式来实现 p2p 模块，但在核心结构的设计上也所差别，没有直接使用 K 桶，而是使用了 Table 作为数据结构，实现更加复杂，实现了节点的初始启动还有异步请求处理等等问题。
+
+discv5 被用来维护节点信息结构，在 `p2p/server.go` 中，会调用 setupDiscovery 方法来开始维护底层节点：
+![image](https://github.com/user-attachments/assets/c1b214dc-5a5a-4dd8-bea0-806380b74474)
+
+discv5的底层使用是一个 p2p/discover/table.go 的数据结构用来维护 p2p 网络的结构，节点发现和管理使用的是一种类似 Kademlia 算法的分布式哈希表算法：
+![image](https://github.com/user-attachments/assets/5ce3d420-0a0e-48fb-a6c6-def12811c610)
+
+在这个方法里会实现底层路由的表的维护和更新：
+![image](https://github.com/user-attachments/assets/f5aa27a6-0954-4aac-8bb3-660c34ffe46a)
+
+discv5 是通过 UDP 来实现的，在 ListenV5 中会初始化 discv5 协议：
+![image](https://github.com/user-attachments/assets/76c901aa-79f0-4cc4-a658-88440b74c1da)
+
+newTalkSystem 初始化 talkSystem 实例，负责管理与其他节点的通信，table 实例负责管理节点，用于存储和维护网络中的节点信息：
+![image](https://github.com/user-attachments/assets/f2c67264-6beb-4b7b-b3c3-58e873ea9067)
+
+table 在初始化时，会加载种子节点（seed nodes）和备用节点（fallback nodes），以确保节点表在启动时具有有效的节点信息。
+![image](https://github.com/user-attachments/assets/0c1465be-e81b-469a-97b7-49142f44e1fc)
+
+discv5 模块的节点发现依赖 lookup 模块来完成，当前需要查找特定节点时，会调用 Lookup 方法来完成查找，实例化一个 lookup，并运行：
+![image](https://github.com/user-attachments/assets/82613fa2-17d3-4cbc-a9e5-90942de6d08e)
+
+发送查询的请求，并对响应的结果进行处理：
+![image](https://github.com/user-attachments/assets/4f149561-9a29-4079-977d-58dd607e147a)
+
+
+
 <!-- Content_END -->
