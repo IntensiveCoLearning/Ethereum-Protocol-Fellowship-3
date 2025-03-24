@@ -488,8 +488,6 @@ console.log("DoubleAndAdd Result:", resultDoubleAndAdd);
 
 现实情况中 k 的值通常为 256 位以上！刚刚运算的只有 9 位。这种即使知道原始点和目标点，也无法找到被乘数的情况，是 ECDSA 算法安全性的基础，这一原理被称为"单向陷门函数"。
 
-TODO 看看 EVM 的代码实现 https://docs.google.com/presentation/d/1_6tKfzWexxCe9og0c-_Qv0BfgSfqdlusXAgkStq3oY8/edit#slide=id.g33f2d85414d_4_0
-
 # 2025.03.20
 
 ECDSA 的几个主要参数有 a, b, p, N and G。N 是曲线上所有的点，然后 G 是某一个随机点，作为 reference point 或者基点。
@@ -629,5 +627,156 @@ n = FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 // 是椭�
 # 2025.03.22
 
 TODO 学习 7720 https://hackmd.io/@colinlyguo/SyAZWMmr1x https://mp.weixin.qq.com/s/WjpPNKEVlxlCSz1WyHH4tw
+
+TODO 看看 EVM 的代码实现 https://docs.google.com/presentation/d/1_6tKfzWexxCe9og0c-_Qv0BfgSfqdlusXAgkStq3oY8/edit#slide=id.g33f2d85414d_4_0
+
+# 2025.03.24
+
+## Step 12: Verifying the Signature
+
+如果想要 verify signature，需要 public key 就可以了：
+
+P = S^-1*z*G + S^-1 _ R _ Qa
+
+TOOD 需要推导一下公式，暂时跳过。简单的说，通过 S 和 Public Key 可以计算出 P 点，判断 P 点是否等于 R（也就是在椭圆曲线上的 x 坐标），如果相等，则说明签名有效，因为：
+
+1. 只有知道 private key 的人才能生成正确的 S
+2. 任何对消息 hash z、R 和 S 篡改，都会导致等式不成立
+
+使用 random number k 和 dA private key 来计算出 S，然后使用 R 和 Qa Public key 可以 verify S。由于 trap door function，不能通过 Qa 和 R 反推计算出 dA 和 k，这样保护了 dA 的安全性。
+
+## https://zh.epf.wiki/#/wiki/Cryptography/ecdsa
+
+椭圆曲线之所以有趣，是因为曲线上的点构成一个群，即两个点 "相加" 的结果仍然在曲线上。
+
+在生成 S 签名的时候，会使用一个随机数，在这个文档上面被称为临时秘钥 eK，生成临时公钥 eP。
+
+根据公式得到 r = x 坐标 和 s = 签名。
+
+验证就是：
+
+- 对消息 Hash
+- 计算临时公钥 R 然后对比 r，不一致就是有问题的
+
+下面是一个 Solidity 的工作代码，使用场景是由服务器后端生成签名，然后放在合约里面进行校验并且开始某些权限，例如 NFT 白名单，在后端完成链下信息的检查，然后一起提交 mint：
+
+1. 后端签名的生成逻辑：
+
+```
+async genSignature(types: string[], values: any[]) {
+  const hash = ethers.utils.keccak256(
+    ethers.utils.defaultAbiCoder.encode(types, values),
+  );
+  const signerWallet = new ethers.Wallet(
+    process.env.SIGNER_WALLET_PRIVATE_KEY,
+  );
+  const message = ethers.utils.arrayify(hash);
+  return await signerWallet.signMessage(message);
+}
+
+const signature = await genSignature(
+  ['address'],
+  [address],
+);
+```
+
+可以获得类似：
+0x4bddeedd03e68dcd87150421a61d4801d8250aa12c0b873a5585873b2bd3e98c67814616c9cb0c9652cfa98f218b5078093d6376d9d8fc56d130dc60266718ad1c 这样的 signature，实际上是三部分的合并：
+
+- r = 0x4bddeedd03e68dcd87150421a61d4801d8250aa12c0b873a5585873b2bd3e98c
+- s = 0x67814616c9cb0c9652cfa98f218b5078093d6376d9d8fc56d130dc60266718ad
+- v = 0x1c
+
+这里需要一个 signer，就是一个 private key，对应也有一个 public key。通过 signer 的 private key + random k + ECDSA 算法，可以生成上面的这个签名。目前是在中心化服务器后端生成。
+
+2. 在智能合约端进行验证：
+
+```
+// 合约验证过程
+function mint(bytes32 hashedMsg, bytes memory signature) external {
+    // 1. 重建以太坊签名消息
+    bytes32 ethSignedHash = hashedMsg.toEthSignedMessageHash();
+
+    // 2. 从签名恢复地址
+    address recoveredSigner = ethSignedHash.recover(signature);
+
+    // 3. 验证签名者是否为授权地址
+    require(recoveredSigner == signer, "Invalid signature");
+
+    // 4. 执行铸造
+    _safeMint(msg.sender, 1);
+}
+```
+
+- toEthSignedMessageHash 是 <https://eip.fun/eips/eip-191> 规范里面的，额外增加了一个 message 前缀 `\x19Ethereum Signed Message:` 防止被攻击
+- recover 使用 ecrecover 预编译合约进行恢复，可以得到一个 public key，就是 signer 的 public key
+- 判断签名是否由 signer 签署，来验证当前签名是否被篡改或者有权限，因此 signer 的 private key 不能泄露
+
+所以这个流程，需要保护好后端的 private key，然后将 signer public key 放在合约里面就可以进行白名单验证了，在后端服务进行判断并且生成 signature。
+
+## secp256k1 曲线公钥恢复详解
+
+secp256k1 曲线的基本参数:
+
+```
+曲线方程: y² = x³ + 7
+p = FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F  // 模数
+a = 0000000000000000000000000000000000000000000000000000000000000000  // 系数a
+b = 0000000000000000000000000000000000000000000000000000000000000007  // 系数b
+G = (
+  x: 79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798,
+  y: 483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8
+)  // 基点坐标
+n = FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141  // 曲线阶
+```
+
+## 输入参数
+
+恢复公钥需要以下输入:
+
+1. 消息哈希(hash): 32 字节
+2. 签名数据(signature): 65 字节
+   - R: 前 32 字节,表示临时公钥的 x 坐标
+   - S: 中间 32 字节,实际签名值
+   - V: 最后 1 字节,恢复标识符(recovery ID)
+
+## 恢复过程
+
+### 1. 恢复临时公钥 R 点
+
+```javascript
+// 1.1 从签名中提取R值(x坐标)
+const x = BigInt(signature.slice(0, 32));
+
+// 1.2 计算y坐标的可能值
+const y2 = (x ** 3n + 7n) % p; // secp256k1曲线方程
+const y = sqrt(y2, p); // 模平方根运算
+
+// 1.3 根据recovery ID选择正确的y值
+const v = signature[64]; // 最后一个字节是recovery ID
+const R = {
+  x: x,
+  y: v === 27 ? y : p - y, // v决定使用哪个y值
+};
+```
+
+### 2. 恢复原始公钥
+
+```javascript
+// 2.1 准备所需值
+const r = x; // R点的x坐标
+const s = BigInt(signature.slice(32, 64)); // 签名值S
+const z = BigInt(hash); // 消息哈希
+
+// 2.2 计算r的模乘法逆元
+const r_inv = modInv(r, n); // 在群的阶n下求逆
+
+// 2.3 计算公钥
+// Qa = r^(-1) * (s*R - z*G)
+const Qa = pointAdd(
+  pointMul(R, s), // s*R
+  pointMul(G, -z) // -z*G
+).multiply(r_inv); // 整体乘以r^(-1)
+```
 
 <!-- Content_END -->
