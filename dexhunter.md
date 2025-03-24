@@ -444,4 +444,52 @@ EIP-155 prevents transaction replay attacks between different Ethereum networks 
 - Modifying the signing algorithm to encode the chain ID in the v value
 - Making it impossible to replay a transaction meant for one network on another
 
+### 2025.03.24
+
+Based on [Chapter 7](https://github.com/ethereumbook/ethereumbook/blob/develop/07smart-contracts-solidity.asciidoc)
+
+What Is a Smart Contract?
+
+Smart contracts in Ethereum are immutable computer programs that run deterministically in the Ethereum Virtual Machine. Despite the name, they aren't "smart" in the AI sense, nor are they legal contracts. They're simply programs deployed on the blockchain that execute exactly as programmed without possibility of downtime, censorship, or third-party interference.
+
+Life Cycle of a Smart Contract
+
+Smart contracts are written in high-level languages (most commonly Solidity), compiled to EVM bytecode, and deployed through special creation transactions. Each contract has a unique Ethereum address but no associated private key. Contracts only execute when called by a transaction, either directly from an EOA or indirectly via another contract. They remain dormant until triggered, and execution is atomic—either fully successful or completely reverted.
+
+Ethereum High-Level Languages
+
+While EVM bytecode is the ultimate language of execution, developers typically write smart contracts in higher-level languages. Solidity is the most widely used, but others include LLL, Serpent, Vyper, and Bamboo. These languages vary in their approach, with some being more declarative (functional) and others more imperative (procedural).
+
+Building Smart Contracts with Solidity
+
+Solidity is an object-oriented language with syntax similar to JavaScript or C++. It includes features specific to blockchain development, such as address types, gas optimization patterns, and built-in functions for Ethereum operations. The chapter walked through building a simple "Faucet" contract that can receive and dispense ether.
+
+The Ethereum Contract ABI
+
+The Application Binary Interface (ABI) defines how to encode function calls and data for the EVM. It allows applications to interact with contracts by specifying the format of functions, arguments, and return values. The ABI is typically output as a JSON structure during compilation.
+
+## Solidity Programming Features
+
+The chapter covered many Solidity programming features:
+
+- **Data types**: Booleans, integers, addresses, arrays, mappings, structs, etc.
+- **Variables and functions**: Global variables like `msg.sender`, `block.number`, and built-in functions
+- **Contract definition**: How to define contracts, interfaces, and libraries
+- **Function modifiers**: For adding preconditions to functions
+- **Inheritance**: How contracts can inherit from other contracts
+- **Error handling**: Using assert, require, and revert
+- **Events**: For logging information and providing return values to the front end
+- **Contract interaction**: How to call other contracts using various methods
+
+Gas Considerations
+
+Gas is a critical constraint in smart contract development. The chapter discussed strategies for minimizing gas consumption, such as avoiding dynamically sized arrays and unnecessary external calls. It also showed how to estimate the gas cost of contract functions.
+
+Smart contract development with Solidity requires understanding not just the language, but also the execution environment, security considerations, and economic implications of your code. This chapter provided the foundation for building effective and efficient smart contracts on Ethereum.
+
+<!-- ### 2025.03.25
+
+TODO: read [chapter 8](https://github.com/ethereumbook/ethereumbook/blob/develop/08smart-contracts-vyper.asciidoc) -->
+
+
 <!-- Content_END -->
