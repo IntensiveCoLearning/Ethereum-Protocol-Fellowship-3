@@ -329,5 +329,30 @@ Danksharding + DAS 如何提升擴展性:
 - Danksharding 提供大規模的數據可用性（Data Availability）
 - DAS 允許輕量級節點高效驗證數據
 - 兩者結合可讓以太坊網絡支援更多 Rollups（如 Optimistic Rollup, ZK Rollup），提升交易吞吐量並降低 Gas 費用
+
+### 2025.03.25
+#### Verkle Trees
+Verkle Tree（Verkle 樹）是一種改進版的 Merkle Patricia Tree（MPT），主要用於 區塊鏈數據存儲與驗證，目前是以太坊等區塊鏈研究的熱門技術之一。它的核心目標是減少數據存儲需求，並提升驗證效率，最終實現「無狀態（stateless）驗證」
+
+為什麼需要 Verkle Trees: 目前的以太坊使用 Merkle Patricia Tree（MPT） 來管理帳本狀態（例如帳戶餘額、合約存儲等）。然而，MPT 有幾個主要缺點
+- 數據大小太大：每次驗證時都需要傳遞大量 Merkle Proof（默克爾證明），導致節點存儲壓力大
+- 存取速度慢：由於樹的深度較深，每次存取數據需要經過多層節點
+- 無法支援「無狀態驗證」：目前的節點仍需存儲大量狀態數據，無法輕量運行
+  
+Verkle Trees 的運作方式: Verkle Tree 本質上仍是一種樹狀數據結構，但與 Merkle Tree 最大的不同是
+- 使用向量承諾（Vector Commitments）
+  - Merkle Tree 使用的是哈希函數來建立樹結構，而 Verkle Tree 則使用 向量承諾（Polynomial Commitments），如 Pedersen 承諾 或 KZG 承諾
+  - 這讓 Verkle Tree 能夠將多個葉節點的哈希值合併成更短的證明，從而大幅減少存儲需求
+- 更小的證明大小
+  - 在 Merkle Tree 中，證明大小（Merkle Proof）會隨著樹的深度增加而增長，而 Verkle Tree 的證明大小可以保持固定（大約 150~200 bytes），即使樹變得非常大
+  - 這對於無狀態驗證（Stateless Validation）非常重要，因為節點無需存儲完整狀態，只需驗證一個小型證明即可確認交易合法性
+- 減少節點深度，提高查詢速度
+  - MPT 每個內部節點最多有 16 個子節點，導致樹的深度較深，查詢時需要經過許多層節點
+  - Verkle Tree 每個內部節點可以有 256 個子節點（或更多），這大幅減少了樹的深度，使得存取速度更快
+ 
+Verkle Trees 的優勢:
+- 更小的驗證數據 → 減少存儲需求，降低節點運行成本
+- 更快的查詢速度 → 提升節點運行效率
+- 支援無狀態驗證 → 讓節點無需存儲完整狀態，即可驗證交易
   
 <!-- Content_END -->

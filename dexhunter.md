@@ -487,9 +487,89 @@ Gas is a critical constraint in smart contract development. The chapter discusse
 
 Smart contract development with Solidity requires understanding not just the language, but also the execution environment, security considerations, and economic implications of your code. This chapter provided the foundation for building effective and efficient smart contracts on Ethereum.
 
-<!-- ### 2025.03.25
+### 2025.03.25
 
-TODO: read [chapter 8](https://github.com/ethereumbook/ethereumbook/blob/develop/08smart-contracts-vyper.asciidoc) -->
+Based on[chapter 8](https://github.com/ethereumbook/ethereumbook/blob/develop/08smart-contracts-vyper.asciidoc)
+】
+
+Vyper is an experimental, contract-oriented programming language for the Ethereum Virtual Machine (EVM)
+It emphasizes readability and security. 
+It aims to make it easier for developers to write intelligible and secure code, 
+reducing the likelihood of vulnerabilities in smart contracts.
+
+Vulnerabilities in Smart Contracts
+
+A study of nearly one million Ethereum smart contracts identified three categories of vulnerabilities:
+
+- **Suicidal Contracts**: Can be killed by arbitrary addresses
+- **Greedy Contracts**: Can reach a state where they cannot release Ether
+- **Prodigal Contracts**: Can be made to release Ether to arbitrary addresses
+
+Vyper addresses these issues by enforcing a design that discourages writing misleading or insecure code.
+
+* Key Differences from Solidity:
+1. No Modifiers
+2. No Class Inheritance
+3. No Inline Assembly
+4. No Function Overloading
+5. Strict Variable Typecasting
+6. No Infinite Loops
+7. Explicit Preconditions and Postconditions
+
+
+* Decorators
+
+```python
+@public     # Function is accessible externally
+@private    # Function can only be called within the contract
+@constant   # Function does not modify state
+@payable    # Function can receive Ether
+```
+
+Variables and functions must be declared before use:
+
+```python
+# Variable declaration
+counter: int128
+
+@public
+def increment():
+    self.counter += 1
+```
+
+* Built-in Overflow Protection
+
+- Implements `SafeMath`-like checks automatically
+- Uses clamps to enforce value ranges
+- Prevents execution of overflowing operations
+
+* Data Operations
+
+**Global State**:
+- State variables stored in Ethereum's global state trie
+- Contracts can only modify their own storage
+
+**Events (Logs)**:
+```python
+# Declaration
+Transfer: event({from: indexed(address), to: indexed(address), value: uint256})
+
+# Emitting
+log Transfer(msg.sender, to_address, amount)
+```
+
+* Compilation Tools
+
+- **Online Tools**: 
+  - [Vyper Online Compiler](https://vyper.online)
+  - [Etherscan Vyper Compiler](https://etherscan.io/vyper)
+  - [Remix with Vyper plugin](https://remix.ethereum.org)
+
+- **Command Line**:
+  ```bash
+  vyper /path/to/contract.vy       # Compile to bytecode
+  vyper -f json /path/to/contract.vy  # Generate ABI in JSON format
+  ```
 
 
 <!-- Content_END -->
