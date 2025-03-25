@@ -134,4 +134,10 @@ timezone: UTC+8
 - 了解了多签钱包，和Bybit被盗事件的过程
 - 学习了 CALL 和 DELEGATECALL的区别
 
+### 2025.03.26
+
+笔记整理：https://github.com/rockyfang2024/Web3Learn/tree/main/ETH%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0
+
+- 学习go-ethereum中的blockchain.go代码
+
 <!-- Content_END -->
