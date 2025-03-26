@@ -660,5 +660,41 @@ logdistance(self, n) == i, 0 ≤ i < 256, k = 16
 ![image](https://github.com/user-attachments/assets/e3b6020b-0f3c-44c0-85b7-8dc411925434)
 
 
+### 2025.03.26
+lookup 是一个核心功能，负责查找对应距离目标节点最近的 k 个节点。具体流程如下：
+
+- **选择初始节点**：从本地路由表中选取 **α 个最接近目标** 的节点（通常 α=3）
+- 向选择的三个节点发送 `FINDNODE` 请求
+- 每个被查询节点返回其路由表中满足要求的节点
+- 合并所有响应节点，按距离排序，从列表中选取 **α 个未查询的最近节点**，重复步骤 2-3
+- 当已查询并收到来自当前 **k 个最近节点** 的响应，请求结束
+
+优化方式：
+
+- 多路查询：通过独立路径降低恶意节点影响，提高查找成功率
+    - **分割初始节点**：将初始的 k 个最近节点分为 **m 个路径**（如 m=3）
+    - **独立执行基本流程**：每个路径维护自己的候选列表和查询历史
+    - **禁止跨路径复用**：路径 1 发现的节点不用于路径 2 的后续查询
+    - **记录已查询节点**：所有路径共享已查询节点列表，避免重复请求
+    - **综合各路径结果**：取所有路径中找到的最近 k 个节点
+- 动态调整查询距离
+    - 当初始查询距离 d 返回节点不足时，增加距离继续查询
+
+在 `p2p/discover/lookup.go` 中，会初始化 lookup 结构：
+![image](https://github.com/user-attachments/assets/20cf5b0f-07a1-499f-ac96-5b4bba9d94fe)
+
+启动 lookup 流程：
+![image](https://github.com/user-attachments/assets/94211d02-d67d-4f44-96b5-231387f0c6af)
+
+一路跟进代码发现最终执行 lookup 的方式在这里实现：
+![image](https://github.com/user-attachments/assets/b9181a61-0ed0-4745-8e22-c518e3ff1d21)
+
+实际调用的方法是在这里配置的：
+![image](https://github.com/user-attachments/assets/72f5a0d0-d953-41d8-b312-132f7c0ffdf1)
+
+执行 Findnode 操作：
+![image](https://github.com/user-attachments/assets/45271590-46a8-4326-95f1-6388e87b21d1)
+
+
 
 <!-- Content_END -->
