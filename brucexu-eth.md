@@ -852,4 +852,47 @@ EIP-7702 的缺点是属于软分叉升级，需要大家共识推动，并且�
 
 TODO 使用 7702 做相关并行交易的酷炫 demo，让大家可以直观的体验到，找一个测试网。
 
+# 2025.03.26
+
+## https://eips.ethereum.org/EIPS/eip-7702
+
+Add a new transaction type that adds a list of [chain_id, address, nonce, y_parity, r, s] authorization tuples. For each tuple, write a delegation designator (0xef0100 || address) to the signing account’s code. All code executing operations must load the code pointed to by the designator.
+
+本质上就是新增了一种新的交易类型，增加了 authorization tuples，然后每个 tuple 指向了一个 delegation designator，执行的时候需要加载这些代码。参数：
+
+- chain_id：链 ID，可能一个是避免分叉重放攻击
+- address：授权的合约地址
+- nonce：防止重放
+- y_partiy, r, s：ECDSA 里面 v, r, s 的值，用于校验签名
+
+```
+// 委托标识符的格式
+bytes32 designator = 0xef0100 || address
+
+// 例如，如果授权地址是 0x1234...
+// 委托标识符就是 0xef01001234...
+```
+
+大概工作流程就是：
+
+1. 创建一个授权地址组，然后加入标记符 0xef0100 组装成 authList
+2. 发送这个特殊的新交易
+3. 执行这个交易代码，会循环将 authList 的 designator 指向的合约加载：codeAddress.call(msg.data)
+
+主要的三类使用场景：
+
+- Batching：一个 atomic 交易中，包含多个 operations。比如 ERC-20 先需要 approval 然后才能继续，需要两个 tx。基于 7702 可以实现更高级的用例：第一个操作的输出、输入第二个操作。
+- Sponsorship：账号 X 为账号 Y 支付 gas fee，还可以支付其他的 ERC-20 token。
+  - TODO 做个 demo 搞清楚原理 https://viem.sh/experimental/eip7702/contract-writes#6-optional-use-a-sponsor
+  - ERC-20 代付的流程其实还是需要通过预言机进行换算，然后进行 token 的转移来实现
+- Privilege de-escalation：签署 sub-keys 实现更加定制化的权限，例如 ERC-20 仅能与特定应用交互。
+  - TODO 做个 demo 搞清楚原理
+
+添加 authList 的实现逻辑：
+
+1. 验证 chain id 是不是 0 或者当前的 ID
+2. 做一些 nonce 之类的参数验证，包括 authority 数组里面的
+3. 如果 address = 0x0000... 空地址，这个是 reset 的意思
+4. 增加相关字段的 nonce
+
 <!-- Content_END -->
