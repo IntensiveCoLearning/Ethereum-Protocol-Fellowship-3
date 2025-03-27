@@ -658,5 +658,77 @@ Failing to manage errors or exceptions, which can disrupt contract execution flo
 2. Ethereum Smart Contract Best Practices: https://consensys.github.io/smart-contract-best-practices/
 3. Trail of Bits Security Blog: https://blog.trailofbits.com/
 
+### 2025.03.27
+
+# Understanding Ethereum Tokens
+
+## Introduction
+Tokens on blockchains have evolved from simple physical representations (like arcade tokens) to versatile digital assets that can represent various forms of value, rights, and ownership. Unlike their physical counterparts, blockchain tokens can have significant value and multiple simultaneous uses.
+
+## Token Use Cases
+
+### Financial Uses
+- **Currency**: Function as a private form of money
+- **Asset**: Represent ownership of tangible/intangible assets
+- **Equity**: Represent shares in organizations
+
+### Rights and Access
+- **Resource**: Represent shared computing/storage resources
+- **Access**: Grant rights to digital/physical properties
+- **Voting**: Enable voting rights in organizations
+
+### Identity and Verification
+- **Identity**: Represent digital or legal identity
+- **Attestation**: Verify certifications or facts
+- **Collectibles**: Represent unique digital or physical items
+- **Utility**: Access to specific services
+
+## Key Characteristics
+
+### Fungibility
+- **Fungible Tokens**: Interchangeable units (like currency)
+- **Non-fungible Tokens**: Unique items (like deeds or collectibles)
+
+### Intrinsicality
+- **Intrinsic**: Assets native to the blockchain
+- **Extrinsic**: External assets represented on blockchain
+
+### Risk Factors
+- Counterparty risk for external asset-backed tokens
+- Implementation security considerations
+- Gas costs in ether for token transactions
+
+## Token Standards
+
+### Major Standards
+1. **ERC20**
+   - Most common standard
+   - Used for fungible tokens
+   - Basic transfer and approval functions
+
+2. **ERC223**
+   - Proposed improvement
+   - Prevents accidental token loss
+   - Enhanced safety features
+
+3. **ERC777**
+   - Advanced token standard
+   - Additional features and hooks
+   - Backward compatible with ERC20
+
+4. **ERC721**
+   - Standard for non-fungible tokens
+   - Unique asset representation
+   - Used for deeds and collectibles
+
+## Implementation Guidelines
+
+### Best Practices
+- Use established standards for interoperability
+- Leverage battle-tested implementations
+- Consider security implications of extensions
+
+### Common Extensions
+- Burning
 
 <!-- Content_END -->
