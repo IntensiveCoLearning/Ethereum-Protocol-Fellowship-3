@@ -490,7 +490,6 @@ Smart contract development with Solidity requires understanding not just the lan
 ### 2025.03.25
 
 Based on[chapter 8](https://github.com/ethereumbook/ethereumbook/blob/develop/08smart-contracts-vyper.asciidoc)
-】
 
 Vyper is an experimental, contract-oriented programming language for the Ethereum Virtual Machine (EVM)
 It emphasizes readability and security. 
@@ -571,5 +570,165 @@ log Transfer(msg.sender, to_address, amount)
   vyper -f json /path/to/contract.vy  # Generate ABI in JSON format
   ```
 
+### 2025.03.26
+
+Based on[chapter 9](https://github.com/ethereumbook/ethereumbook/blob/develop/09smart-contracts-security.asciidoc)
+
+#### Common Vulnerabilities
+
+1. Reentrancy Attacks
+
+Exploiting the ability to repeatedly call a function before previous executions are completed, 
+leading to inconsistent states and potential fund siphoning.
+
+```solidity
+// Vulnerable code example
+function withdraw() public {
+    uint amount = balances[msg.sender];
+    // Send funds before updating state
+    (bool success, ) = msg.sender.call{value: amount}("");
+    // State update happens after external call
+    balances[msg.sender] = 0;
+}
+```
+
+2. Integer Overflows and Underflows
+
+Errors occurring when calculations exceed the maximum or minimum capacity of a data type, causing unexpected behavior.
+
+```solidity
+// Vulnerable code example
+function transfer(address _to, uint256 _value) public {
+    // No check if balance >= _value
+    balances[msg.sender] -= _value;
+    balances[_to] += _value;
+}
+```
+
+3. Denial of Service (DoS)
+
+Malicious actions that prevent contract functions from executing properly, 
+often by consuming excessive gas or manipulating contract state.
+
+4. Access Control Issues
+
+Incorrect implementation of authorization checks, allowing unauthorized entities to perform privileged actions.
+
+5. Timestamp Dependence
+
+Relying on block timestamps for critical contract logic, which can be manipulated by miners within a certain range.
+
+6. Unhandled Exceptions
+
+Failing to manage errors or exceptions, which can disrupt contract execution flow and security.
+
+#### Best Practices for Secure Smart Contracts
+
+- **Code Review and Auditing**: Regularly auditing code to detect and fix vulnerabilities before deployment.
+- **Use Established Libraries**: Leveraging well-tested and community-reviewed libraries and frameworks (e.g., OpenZeppelin contracts).
+- **Thorough Testing**: Implementing comprehensive test suites, including unit tests, integration tests, and property-based tests.
+- **Avoiding Complex Logic**: Keeping contracts simple and modular to reduce the attack surface and make auditing easier.
+- **Fail-Safe Mechanisms**: Designing contracts to be secure by default, with appropriate fallback functions and error handling.
+
+#### Security Tools and Resources
+
+- **Static Analysis Tools**: Utilizing tools like **Mythril**, **Slither**, and **Oyente** to automatically detect vulnerabilities.
+- **Formal Verification**: Applying mathematical methods to prove the correctness of contract algorithms against a formal specification.
+- **Bug Bounty Programs**: Encouraging external security researchers to find and report vulnerabilities through incentivized programs.
+
+#### Notable Security Incidents
+
+- **The DAO Attack (2016)**: An infamous reentrancy attack that led to the theft of around 3.6 million Ether, highlighting the importance of secure coding practices.
+- **Parity Wallet Bugs (2017)**: A series of vulnerabilities in a popular wallet that resulted in significant funds being inaccessible or stolen.
+
+#### Legal and Ethical Considerations
+
+- **Compliance**: Understanding and adhering to legal regulations regarding smart contracts and digital transactions in applicable jurisdictions.
+- **Transparency and Disclosure**: Maintaining openness about contract functionality and potential risks to users and stakeholders.
+
+#### Future Trends in Smart Contract Security
+
+- **Advanced Security Protocols**: Development of new protocols and standards aimed at enhancing security.
+- **Layer 2 Solutions**: Implementing off-chain solutions to reduce the burden on the main blockchain and improve security.
+- **Education and Community Efforts**: Growing emphasis on educating developers and fostering a community dedicated to best practices in security.
+
+#### READ MORE
+
+1. OpenZeppelin Security Blog: https://blog.openzeppelin.com/
+2. Ethereum Smart Contract Best Practices: https://consensys.github.io/smart-contract-best-practices/
+3. Trail of Bits Security Blog: https://blog.trailofbits.com/
+
+### 2025.03.27
+
+# Understanding Ethereum Tokens
+
+## Introduction
+Tokens on blockchains have evolved from simple physical representations (like arcade tokens) to versatile digital assets that can represent various forms of value, rights, and ownership. Unlike their physical counterparts, blockchain tokens can have significant value and multiple simultaneous uses.
+
+## Token Use Cases
+
+### Financial Uses
+- **Currency**: Function as a private form of money
+- **Asset**: Represent ownership of tangible/intangible assets
+- **Equity**: Represent shares in organizations
+
+### Rights and Access
+- **Resource**: Represent shared computing/storage resources
+- **Access**: Grant rights to digital/physical properties
+- **Voting**: Enable voting rights in organizations
+
+### Identity and Verification
+- **Identity**: Represent digital or legal identity
+- **Attestation**: Verify certifications or facts
+- **Collectibles**: Represent unique digital or physical items
+- **Utility**: Access to specific services
+
+## Key Characteristics
+
+### Fungibility
+- **Fungible Tokens**: Interchangeable units (like currency)
+- **Non-fungible Tokens**: Unique items (like deeds or collectibles)
+
+### Intrinsicality
+- **Intrinsic**: Assets native to the blockchain
+- **Extrinsic**: External assets represented on blockchain
+
+### Risk Factors
+- Counterparty risk for external asset-backed tokens
+- Implementation security considerations
+- Gas costs in ether for token transactions
+
+## Token Standards
+
+### Major Standards
+1. **ERC20**
+   - Most common standard
+   - Used for fungible tokens
+   - Basic transfer and approval functions
+
+2. **ERC223**
+   - Proposed improvement
+   - Prevents accidental token loss
+   - Enhanced safety features
+
+3. **ERC777**
+   - Advanced token standard
+   - Additional features and hooks
+   - Backward compatible with ERC20
+
+4. **ERC721**
+   - Standard for non-fungible tokens
+   - Unique asset representation
+   - Used for deeds and collectibles
+
+## Implementation Guidelines
+
+### Best Practices
+- Use established standards for interoperability
+- Leverage battle-tested implementations
+- Consider security implications of extensions
+
+### Common Extensions
+- Burning
 
 <!-- Content_END -->
