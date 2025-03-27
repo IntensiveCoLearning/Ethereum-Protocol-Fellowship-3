@@ -895,4 +895,12 @@ bytes32 designator = 0xef0100 || address
 3. 如果 address = 0x0000... 空地址，这个是 reset 的意思
 4. 增加相关字段的 nonce
 
+# 2025.03.27
+
+## https://eips.ethereum.org/EIPS/eip-7702
+
+### Delegation Designation
+
+The delegation designation uses the banned opcode 0xef from EIP-3541 to designate the code has a special purpose.
+
 <!-- Content_END -->
