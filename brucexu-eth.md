@@ -895,4 +895,22 @@ bytes32 designator = 0xef0100 || address
 3. 如果 address = 0x0000... 空地址，这个是 reset 的意思
 4. 增加相关字段的 nonce
 
+# 2025.03.27
+
+## https://eips.ethereum.org/EIPS/eip-7702
+
+### Delegation Designation
+
+The delegation designation uses the banned opcode 0xef from EIP-3541 to designate the code has a special purpose.
+
+# 2025.03.28
+
+## https://eip.fun/eips/eip-7702
+
+The following reading instructions are impacted: EXTCODESIZE, EXTCODECOPY, EXTCODEHASH, and the following executing instructions are impacted: CALL, CALLCODE, STATICCALL, DELEGATECALL, as well as transactions with destination targeting the code with delegation designation.
+
+例如 EXTCODESIZE 会返回 23（0xef0100 的长度）而不是 0，所以用这种方式判断是否是 eoa 是不太好的。
+
+看到 application 这一部分 https://eip.fun/eips/eip-7702#self-sponsoring:-allowing-tx.origin-to-set-code
+
 <!-- Content_END -->
