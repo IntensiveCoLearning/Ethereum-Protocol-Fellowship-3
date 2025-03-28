@@ -324,7 +324,7 @@ PBS旨在通过分离提案者和构建者的角色，实现
 
 ### 2025.03.28
 
-# MEV-Boost 
+#### MEV-Boost 
 MEV-Boost (Maximum Extractable Value-Boost) 旨在在不修改以太坊底层协议的情况下，尽可能实现PBS。MEV-Boost 充当中间件，本质上通过中继节点实现区块构建者和验证者之间的通信。
 
 **工作流程总结:**
