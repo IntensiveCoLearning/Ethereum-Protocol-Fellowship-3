@@ -660,47 +660,42 @@ Failing to manage errors or exceptions, which can disrupt contract execution flo
 
 ### 2025.03.27
 
-# Understanding Ethereum Tokens
+#### Token Use Cases
 
-## Introduction
-Tokens on blockchains have evolved from simple physical representations (like arcade tokens) to versatile digital assets that can represent various forms of value, rights, and ownership. Unlike their physical counterparts, blockchain tokens can have significant value and multiple simultaneous uses.
-
-## Token Use Cases
-
-### Financial Uses
+##### Financial Uses
 - **Currency**: Function as a private form of money
 - **Asset**: Represent ownership of tangible/intangible assets
 - **Equity**: Represent shares in organizations
 
-### Rights and Access
+##### Rights and Access
 - **Resource**: Represent shared computing/storage resources
 - **Access**: Grant rights to digital/physical properties
 - **Voting**: Enable voting rights in organizations
 
-### Identity and Verification
+##### Identity and Verification
 - **Identity**: Represent digital or legal identity
 - **Attestation**: Verify certifications or facts
 - **Collectibles**: Represent unique digital or physical items
 - **Utility**: Access to specific services
 
-## Key Characteristics
+#### Key Characteristics
 
-### Fungibility
+##### Fungibility
 - **Fungible Tokens**: Interchangeable units (like currency)
 - **Non-fungible Tokens**: Unique items (like deeds or collectibles)
 
-### Intrinsicality
+##### Intrinsicality
 - **Intrinsic**: Assets native to the blockchain
 - **Extrinsic**: External assets represented on blockchain
 
-### Risk Factors
+##### Risk Factors
 - Counterparty risk for external asset-backed tokens
 - Implementation security considerations
 - Gas costs in ether for token transactions
 
-## Token Standards
+#### Token Standards
 
-### Major Standards
+##### Major Standards
 1. **ERC20**
    - Most common standard
    - Used for fungible tokens
@@ -721,14 +716,163 @@ Tokens on blockchains have evolved from simple physical representations (like ar
    - Unique asset representation
    - Used for deeds and collectibles
 
-## Implementation Guidelines
+#### Implementation Guidelines
 
-### Best Practices
+##### Best Practices
 - Use established standards for interoperability
 - Leverage battle-tested implementations
 - Consider security implications of extensions
 
-### Common Extensions
+##### Common Extensions
 - Burning
+
+### 2025.03.28
+
+
+
+#### Oracle Use Cases and Examples
+
+Oracles can provide various types of data, including:
+
+- **Random Numbers**: For fair selection in games and lotteries.
+- **Financial Data**: Exchange rates, stock prices, benchmark interest rates.
+- **Weather Data**: For insurance contracts and predictions.
+- **Sporting Events**: For prediction markets.
+- **IoT Data**: For supply chain tracking.
+
+#### Oracle Design Patterns
+
+There are three main oracle design patterns:
+
+1. **Immediate-Read Oracles**
+Provide data needed for immediate decisions. 
+Data is stored in the oracle's smart contract storage and can be accessed directly by other contracts.
+
+2. **Publish-Subscribe Oracles**
+Oracles update data regularly, 
+and interested parties can subscribe to receive updates or monitor changes.
+
+3. **Request-Response Oracles**
+DApps request specific data, and the oracle retrieves and returns the data asynchronously.
+
+#### Data Authentication
+
+Ensuring the integrity and authenticity of the data provided by oracles is crucial. Two common approaches are:
+
+- **Authenticity Proofs**: 
+Cryptographic guarantees that data has not been tampered with, such as TLSNotary proofs.
+
+- **Trusted Execution Environments (TEEs)**: 
+Hardware-based secure enclaves (e.g., Intel SGX) that securely process and attest to data integrity.
+
+#### Computation Oracles
+
+Computation oracles perform off-chain computations and return results to smart contracts. 
+This is useful for resource-intensive calculations that are impractical to perform on-chain due to gas limits.
+
+Examples include:
+
+- **Oraclize**
+Offers computation services using AWS virtual machines and Docker containers.
+- **TrueBit**
+Provides scalable and verifiable off-chain computations via a network of incentivized solvers and verifiers.
+
+#### Decentralized Oracles
+
+Decentralized oracles aim to eliminate single points of 
+failure by using networks of data providers and on-chain aggregation methods. 
+
+Examples include:
+- **ChainLink**
+Uses reputation, order-matching, and aggregation contracts to source data from multiple oracles.
+- **SchellingCoin Protocol**
+Relies on multiple participants reporting values and using the median as the correct answer,
+incentivizing honest reporting.
+
+#### Oracle Client Interfaces in Solidity
+
+Smart contracts in Solidity can interact with oracles through defined interfaces. 
+
+Examples include:
+
+##### Using Oraclize to Update ETH/USD Exchange Rate
+
+An example contract that uses Oraclize to fetch and update the ETH/USD price from an external API every 10 minutes.
+
+```solidity
+contract EthUsdPriceTicker is usingOraclize {
+
+    uint public ethUsd;
+
+    event newOraclizeQuery(string description);
+    event newCallbackResult(string result);
+
+    function EthUsdPriceTicker() payable {
+        oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
+        queryTicker();
+    }
+
+    function __callback(bytes32 _queryId, string _result, bytes _proof) public {
+        if (msg.sender != oraclize_cbAddress()) throw;
+        newCallbackResult(_result);
+        ethUsd = parseInt(_result, 2);
+        queryTicker();
+    }
+
+    function queryTicker() external payable {
+        if (oraclize_getPrice("URL") > this.balance) {
+            newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+        } else {
+            newOraclizeQuery("Oraclize query was sent, standing by for the answer...");
+            oraclize_query(60 * 10, "URL", "json(https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD).USD");
+        }
+    }
+}
+```
+
+##### Contract Calling the BlockOne IQ Service for Market Data
+
+An example of a contract interacting with Thomson Reuters' BlockOne IQ oracle service to request market data.
+
+```solidity
+contract OracleB1IQClient {
+
+    Oracle private oracle;
+    event LogError(bytes32 description);
+
+    function OracleB1IQClient(address addr) external payable {
+        oracle = Oracle(addr);
+        getIntraday("IBM", now);
+    }
+
+    function getIntraday(bytes32 ric, uint256 timestamp) public {
+        uint256 id = oracle.initRequest(0, this.handleSuccess, this.handleFailure);
+        oracle.addArgumentToRequestString(id, "symbol", ric);
+        oracle.addArgumentToRequestUint(id, "timestamp", timestamp);
+        oracle.executeRequest(id);
+    }
+
+    function handleSuccess(uint256 id) public {
+        assert(msg.sender == address(oracle));
+        bytes32 ric = oracle.getResponseString(id, "symbol");
+        uint256 open = oracle.getResponseUint(id, "open");
+        uint256 high = oracle.getResponseUint(id, "high");
+        uint256 low = oracle.getResponseUint(id, "low");
+        uint256 close = oracle.getResponseUint(id, "close");
+        uint256 bid = oracle.getResponseUint(id, "bid");
+        uint256 ask = oracle.getResponseUint(id, "ask");
+        uint256 timestamp = oracle.getResponseUint(id, "timestamp");
+        oracle.deleteResponse(id);
+        // Do something with the price data
+    }
+
+    function handleFailure(uint256 id) public {
+        assert(msg.sender == address(oracle));
+        bytes32 error = oracle.getResponseError(id);
+        oracle.deleteResponse(id);
+        emit LogError(error);
+    }
+}
+```
 
 <!-- Content_END -->

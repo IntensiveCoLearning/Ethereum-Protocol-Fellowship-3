@@ -715,4 +715,28 @@ lookup 是一个核心功能，负责查找对应距离目标节点最近的 k �
         - 全局 Topic 数量不能超过 5 万
 
 
+### 2025.03.28
+ENR（EIP-778）是用于存储和传播节点信息的格式，标准化了 p2p 网络中节点的身份验证和连接信息，ENR 由三个部分组成：
+
+- 签名（s**ignature**）：对 ENR 内容的签名，确保数据完整性和来源可信
+- 序列号（**seq**）：记录更新的计数器，递增更新
+- 键值对（pairs）：节点信息的键值对，enr 有一组默认的键值对
+    - id：身份方案名称，当前为 v4
+    - secp256k1： 压缩公钥
+    - ip：IPv4 地址
+    - tpc/udp：端口号
+    - ip6: IPv6 地址
+    - tcp6/udp6：端口号
+- 签名生成：
+    - content = RLP([seq, k1, v1, k2, v2, ...])
+    - 对 `content` 计算 Keccak256 哈希
+    - 使用私钥对哈希值生成 ECDSA 签名
+
+ENR 内容使用 RLP 方式编码，按照 `[signature, seq, k1, v1, k2, v2, ...]` 的方式（递归长度前缀）序列化。
+
+在 go-ethereum 中对应的实现：
+![image](https://github.com/user-attachments/assets/20cb2871-b763-4103-b586-a173f7fd54c9)
+
+
+
 <!-- Content_END -->
