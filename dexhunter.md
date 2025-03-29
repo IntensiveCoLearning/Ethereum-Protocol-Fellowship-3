@@ -875,4 +875,62 @@ contract OracleB1IQClient {
 }
 ```
 
+
+### 2025.03.29
+
+
+A DApp is an application that operates without central control, 
+leveraging decentralized technologies to eliminate single points of failure or authority. 
+
+The key aspects that can be decentralized in an application include:
+- **Backend Software (Smart Contracts)**: Logic and state managed on blockchain.
+- **Frontend Software**: Interfaces running locally or served via decentralized storage.
+- **Data Storage**: Utilizing decentralized filesystems like IPFS or Swarm.
+- **Message Communications**: Employing protocols like Whisper for P2P messaging.
+- **Name Resolution**: Using systems like the Ethereum Name Service (ENS).
+
+#### Advantages of DApps
+
+- **Resiliency**: No downtime due to decentralized operation.
+- **Transparency**: Open-source code and on-chain transactions enhance trust.
+- **Censorship Resistance**: Users interact directly without centralized interference.
+
+
+#### Backend (Smart Contracts)
+
+Smart contracts on Ethereum act as the backend, 
+executing business logic and maintaining state. 
+These contracts are immutable and operate transparently on the blockchain.
+Key considerations when developing smart contracts include:
+
+- **Immutability**: Contracts cannot be altered once deployed.
+- **Gas Costs**: Computational operations incur costs, so efficiency is essential.
+
+#### Frontend (Web User Interface)
+
+The frontend can be built using standard web technologies (HTML, CSS, JavaScript) 
+and interacts with the blockchain via libraries like **web3.js**. 
+Users can access DApps through web browsers equipped with extensions like **MetaMask**.
+
+#### Data Storage
+
+Due to the high cost of on-chain storage, DApps use decentralized storage solutions for large data:
+
+- **IPFS (InterPlanetary File System)**: A P2P hypermedia protocol for storing and sharing content-addressed files.
+- **Swarm**: An Ethereum-native decentralized storage and content distribution service.
+
+#### Decentralized Message Communications Protocols
+
+Protocols like **Whisper** enable P2P messaging without centralized servers, 
+allowing for features like encrypted chat rooms within DApps.
+
+#### Name Resolution
+
+The **Ethereum Name Service (ENS)** provides a decentralized domain name system, 
+allowing human-readable names (e.g., `mydapp.eth`) to reference smart contracts, wallets, or Swarm/IPFS content hashes.
+
+
+
+### 2025.03.30
+
 <!-- Content_END -->
