@@ -738,5 +738,50 @@ ENR 内容使用 RLP 方式编码，按照 `[signature, seq, k1, v1, k2, v2, ...
 ![image](https://github.com/user-attachments/assets/20cb2871-b763-4103-b586-a173f7fd54c9)
 
 
+### 2025.03.29
+在传统的 p2p 网络中，会通过硬编码启动节点的方式来帮助节点冷启动，devp2p 则通过 DNS 来实现动态、可验证的节点列表分发（EIP-1459）。这样节点只需要提前知道 DNS 域名和公钥，就可以安全地获得最新节点信息，而不需要更新软件。
+
+NodeList 是一个组件，主要有三部分内容组成：
+
+- ENRs：包含多个 ENR 记录或者指向其他 NodeList 的链接
+- 签名：包含内容的签名，客户端可以使用公钥验证完整性
+- 序列号：通过序列号更新版本，防止回滚攻击
+
+代码在 `p2p/dnsdisc/sync.go` 和 `p2p/dnsdisc/tree.go` 中实现：
+
+![image](https://github.com/user-attachments/assets/b292b1a8-68f6-45bd-b536-d595890f7ab2)
+
+![image](https://github.com/user-attachments/assets/defbbb23-896f-4a50-b08f-ac258b5a306a)
+
+
+
+NodeList 内容由 Merkle 树组成，并且会对这些内容签名，无论是记录内容被篡改还是签名被篡改，都会导致验证无法通过
+
+- url格式：enrtree://<base32(公钥)>@<DNS域名>
+- DNS 记录结构：
+    - 根记录：enrtree-root:v1 e=<enr-root> l=<link-root> seq=<序列号> sig=<签名>
+        - enr-root：enr 子树的根 hash
+        - link-root：其他 NodeList 子树的根 hash
+        - 签名：对根记录内容的签名
+    - 子树记录
+        - 分支（Branch）：enrtree-branch:<哈希1>,<哈希2>,…
+        - ENR 叶子（Leaf）：enr:<Base64URL(ENR)>
+        - 其他 NodeList 链接（Link）：enrtree://<公钥>@<目标域名>
+
+客户端协议的处理流程：
+
+- 获取根记录
+    - 首先获取 DNS 域名的根记录，解析 enrtree-root
+    - 使用公钥验证签名，检查序列号是否递增
+- 遍历 Merkle 树
+    - 解析 enr-root 和 link-root
+    - 处理记录
+        - 对于分支，递归查询所有的子树
+        - 对于 ENR 叶子，解码 ENR 并验证签名，存入本地
+        - 对于 link，将新域名加入待解析队列
+- 优化：
+    - 对于已经访问的域名和 hash 进行记录，避免重复查询
+    - 按需加载，避免一次加载所有的内容
+
 
 <!-- Content_END -->
