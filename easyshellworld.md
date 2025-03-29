@@ -754,6 +754,56 @@ sudo apt install kurtosis-cli
   子协议是构建在 devp2p 之上的应用层协议，定义了特定功能的通信方式。以太坊的子协议包括以太坊线协议（eth/68），用于区块和交易的传播；轻客户端协议（les/4），支持轻量级客户端访问区块链数据；快照协议（snap/1），用于区块链状态的同步等。这些子协议通过扩展 devp2p，实现了以太坊网络的多样化功能。  
 
 
+### 2025.03.29
+#### 19th-libp2p
+* **CL 网络协议**  
+  CL 网络协议主要指 libp2p 中用于连接建立、管理和升级的底层协议。它负责协调握手、加密和多路复用等关键环节，使得多个子协议能够在单一连接上共存，从而实现安全、稳定和高效的点对点通信。
+
+* **libp2p**  
+  libp2p 是一个模块化的点对点网络协议栈，由多个独立但互相协作的协议组成。它提供地址管理、节点发现、连接管理、安全传输、多路复用以及发布/订阅等功能，是构建去中心化应用的基础工具。通过抽象和分层设计，libp2p 能够适应各种网络环境和应用需求。
+
+* **Yamux**  
+  Yamux（Yet Another Multiplexer）是一种流多路复用协议，用于在单一传输连接上承载多个逻辑流。它设计简单高效，支持动态创建和关闭流，并具备流量控制和错误恢复功能，从而提高了连接的利用率和整体传输效率。
+
+* **Noise**  
+  Noise 是基于 Noise 协议框架的加密握手协议，主要用于在通信双方之间建立安全且经过认证的加密通道。其设计简洁且高性能，采用了现代密码学技术，确保数据在传输过程中的机密性和完整性，是 libp2p 中的重要安全协议之一。
+
+* **GossipSub**  
+  GossipSub 是 libp2p 实现的发布/订阅协议，采用基于 Gossip 的消息传播机制。它将推送和拉取相结合，通过节点之间的随机连接来高效分发消息，同时具备消息验证、节点评分和自适应传播策略，能够在大规模分布式网络中实现可靠且可扩展的消息传递。
+* **exp code**
+```
+// 示例1：创建一个基本的 libp2p 节点，使用 TCP 传输、Noise 加密和 Yamux 多路复用
+
+import Libp2p from 'libp2p'
+import TCP from 'libp2p-tcp'
+import { NOISE } from 'libp2p-noise'
+import Yamux from 'libp2p-yamux'
+
+const createLibp2pNode1 = async () => {
+  const node = await Libp2p.create({
+    addresses: {
+      // 监听所有 IP，TCP 端口由系统自动分配
+      listen: ['/ip4/0.0.0.0/tcp/0']
+    },
+    modules: {
+      transport: [TCP],
+      connEncryption: [NOISE],
+      streamMuxer: [Yamux]
+    }
+  })
+  await node.start()
+  console.log('节点启动成功，监听地址：', node.multiaddrs.map(addr => addr.toString()))
+  return node
+}
+
+;(async () => {
+  const node1 = await createLibp2pNode1()
+  // 节点启动后，可通过 node1 进行拨号或接收连接
+})()
+```
+
+
+
 
 
 
