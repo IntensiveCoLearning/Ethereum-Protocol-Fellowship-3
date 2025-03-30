@@ -408,4 +408,31 @@ Purge（歷史數據清除）+ Portal Network 的影響:
   - 資料可用性問題：如果 Portal Network 無法可靠存儲歷史數據，可能會導致某些資料無法查詢
   - 網路效能與安全性：需要確保 Portal Network 內的節點不會因惡意行為而影響數據存取
 
+
+### 2025.03.30
+#### Fork Choice
+Fork-Choice是指在區塊鏈發生分叉時，要怎麼選一個最好的鏈作為主鏈。
+
+- Fork-Choice 的基本概念
+Fork-Choice 規則是用來解決分叉的情境，特別是ETH從 PoW 轉變到 PoS 後，不再是選擇工作量證明(最長的鏈)做最主練。PoS 會依賴持有最多權益的區塊鏈選擇策略。 ETH 從 PoW 轉到 PoS 後，fork-choice 也發生轉變，不再是簡單選長度最大的鏈，而是有更複雜的算法和條件。
+
+- Fork-Choice 規則的發展
+  - PoW階段: 選擇工作量最多的鏈
+  - PoS階段: 因為 PoS 不再是依賴工作量證明，而是依賴持有 ETH 的人，所以 fork-choice 會選擇最有可能產生正確的狀態的鏈，而不是單純以鏈的長度決定
+  - 在 PoS 下的 Fork-Choice 規則: 在 PoS 系統中，fork-choice 的規則是基於 Finality 和 Canonical Chain 來進行決策，最常用的 fork-choice 是 Gasper，這是一種基於 BFT(拜占庭容錯)模型的算法
+ 
+- Finality
+指一個區塊一但被添加到區款練中，就被任為是不可羹改或是不可回滾的。
+
+- Canonical Chain
+指區塊鏈中的標準鏈，它是由網路共識選出的、被認可的鏈。再多條鏈分叉的情況下，Canonical Chain 被認為是合法且有效的主鏈。當一個區塊達到 Finality 後，他被認為是 Canonical Chain 的一部分
+
+- 未來的 Fork-Choice 升級
+ETH 在未來的升級中，會進一步完善 fork-choice 規則，將更多安全性和效率印入主鏈的選擇中。
+
+- Fork-Choice 的挑戰
+隨著 ETH 的發展，fork- 的挑戰將越來約複雜，尤其是當引入分片技術時，如何卻表再多條平行鏈中仍能確保一致性，並選擇最佳的鏈來繼續構建。
+
+
+
 <!-- Content_END -->
