@@ -913,4 +913,19 @@ The following reading instructions are impacted: EXTCODESIZE, EXTCODECOPY, EXTCO
 
 看到 application 这一部分 https://eip.fun/eips/eip-7702#self-sponsoring:-allowing-tx.origin-to-set-code
 
+# 2025.03.30
+
+## https://eip.fun/eips/eip-7702
+
+### Self-sponsoring: allowing tx.origin to set code
+
+允许 tx.origin 来 set code 可以实现一笔交易完成 ERC20 的 approve-then-transfer 模式，让黑客钓鱼更开心。
+
+TODO 做一个 demo。
+
+之前有通过判断 msg.sender == tx.origin 来判断当前调用者是否为 EOA 钱包的逻辑，有了 7702 之后，这个判断可能会不成立。分析一下这种判断大概有三种 cases：
+
+1. 确保 msg.sender 是一个 EOA。当 EOA 使用 EIP-7702 发送交易时，msg.sender 仍然是 EOA 的地址值。
+2.
+
 <!-- Content_END -->
