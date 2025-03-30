@@ -933,4 +933,129 @@ allowing human-readable names (e.g., `mydapp.eth`) to reference smart contracts,
 
 ### 2025.03.30
 
+The Ethereum Virtual Machine (EVM) is the runtime environment for smart contracts in Ethereum. 
+
+#### What Is the EVM?
+
+- **Computation Engine**:
+ Similar to virtual machines like the JVM or interpreters for languages like Java, 
+ the EVM executes compiled bytecode from high-level languages such as Solidity.
+- **Quasi–Turing-Complete**: 
+The EVM is limited by gas, ensuring that all executions halt and preventing infinite loops, 
+thus addressing the halting problem.
+- **Stack-Based Architecture**:
+  - **Word Size**: 256 bits, facilitating cryptographic operations.
+  - **Components**:
+    - **Program Code ROM**: Immutable code loaded for execution.
+    - **Memory**: Volatile and initialized to zero.
+    - **Storage**: Persistent data unique to each contract.
+
+#### Comparison with Existing Technology
+
+The EVM differs from traditional virtual machines:
+
+- **No Scheduling**: 
+Execution order is determined externally by the Ethereum clients processing transactions and blocks.
+- **No System Interface or Hardware**:
+ The EVM operates in a virtual environment without direct access to hardware or operating system interfaces.
+- **Global Single-Threaded Computer**: 
+Ethereum functions as a single-threaded world computer,
+where the EVM ensures deterministic execution of smart contracts.
+
+#### The EVM Instruction Set (Bytecode Operations)
+
+The EVM supports a rich set of opcodes divided into categories:
+
+1. **Arithmetic Operations**: `ADD`, `MUL`, `SUB`, `DIV`, `MOD`, etc.
+2. **Stack Operations**: `PUSH`, `POP`, `DUP`, `SWAP`, etc.
+3. **Control Flow Operations**: `JUMP`, `JUMPI`, `STOP`, `RETURN`, etc.
+4. **Logical Operations**: `AND`, `OR`, `XOR`, `NOT`, `LT`, `GT`, etc.
+5. **Environmental Operations**: Accessing information like `CALLER`, `CALLVALUE`, `GASPRICE`, etc.
+6. **Block Operations**: Accessing block metadata such as `BLOCKHASH`, `TIMESTAMP`, `NUMBER`, etc.
+7. **System Operations**: `CREATE`, `CALL`, `SELFDESTRUCT`, etc.
+
+#### Ethereum State
+
+- **World State**: A mapping of addresses to account states.
+- **Accounts**:
+  - **Externally Owned Accounts (EOAs)**: Controlled by private keys, with no associated code.
+  - **Contract Accounts**: Contain code (smart contracts) and storage.
+- **State Transitions**:
+  - Triggered by transactions and smart contract executions.
+  - The EVM processes state changes in a sandboxed environment, 
+  which is only committed to the world state upon successful execution.
+
+#### Compiling Solidity to EVM Bytecode
+
+- **Solidity Compiler (`solc`)**: Used to compile high-level Solidity code into EVM bytecode.
+- **Generating Opcodes and Bytecode**:
+  ```bash
+  solc --opcodes Contract.sol  # Get opcode representation
+  solc --bin Contract.sol      # Get bytecode binary
+  ```
+- **Analysis**:
+  - Understanding opcodes helps in optimizing and debugging smart contracts.
+  - Example contracts can be compiled and their opcodes examined for educational purposes.
+
+#### Contract Deployment Code
+
+- **Deployment Bytecode**: Includes both the contract's runtime bytecode and initialization code.
+- **Runtime Bytecode**: The code that is executed when the contract is called after deployment.
+- **Deployment Process**:
+  - A special transaction with the `to` address set to zero deploys the contract.
+  - The constructor and initialization code run, setting up the contract's storage and state.
+
+#### Disassembling the Bytecode
+
+- **Tools**:
+  - **Porosity**: Open source decompiler
+  - **Ethersplay**: Binary Ninja plugin
+  - **IDA-Evm**: IDA plugin
+- **Understanding Dispatchers**:
+  - Function selectors (first 4 bytes of the `keccak256` hash of the function signature) 
+  are used to route calls to the correct function.
+- **Example Analysis**:
+  - By disassembling a contract like `Faucet.sol`, 
+  one can see how the dispatcher handles function calls and fallback functions.
+
+#### Turing Completeness and Gas
+
+- **Halting Problem**: The EVM avoids non-terminating execution by limiting computations with gas.
+- **Gas**:
+  - **Unit of Computational Work**: Every opcode has an associated gas cost.
+  - **Prevents Denial-of-Service Attacks**: Attackers cannot exhaust network resources
+   without incurring significant costs.
+- **Quasi–Turing-Complete**: The EVM can execute any computation that completes within the gas limit.
+
+#### Gas
+
+##### Gas Accounting During Execution
+
+- **Gas Supply**: Each transaction specifies a gas limit and gas price.
+- **Execution**:
+  ```
+  miner fee = gas cost * gas price
+  remaining gas = gas limit - gas cost
+  refunded ether = remaining gas * gas price
+  ```
+- **Refunds**:
+  - Unused gas is refunded to the sender.
+
+##### Gas Cost Versus Gas Price
+
+- **Gas Cost**: Fixed amount of gas required for an operation (e.g., `ADD` costs 3 gas).
+- **Gas Price**: Amount of ether the sender is willing to pay per unit of gas.
+- **Transaction Fee**: Calculated as `gas used * gas price`.
+
+##### Block Gas Limit
+
+- **Definition**: The maximum amount of gas allowed in a block, limiting the number of transactions.
+- **Adjustment**:
+  - Miners can vote to adjust the block gas limit within certain constraints.
+  - Ensures network scalability and security.
+
+### 2025.03.31
+
+
+
 <!-- Content_END -->
