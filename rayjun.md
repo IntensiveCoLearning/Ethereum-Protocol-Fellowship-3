@@ -820,5 +820,47 @@ RLPx 协议有四个核心流程：
     - 正常关闭，发送 `Disconnect` 消息，包含断开原因（如 `REQUESTED` 或 `NETWORK_ERROR`），双方释放连接资源
     - 异常处理，检测到无效 MAC 或超时，立即终止连接
 
+### 2025.03.31
+在 p2p/server.go 的 setupConn 中处理 RLPx 连接：
+![image](https://github.com/user-attachments/assets/65134d26-2033-4640-99c2-a10882bcf684)
+
+在 server 启动的时候，会设置节点进行连接的方法：
+![image](https://github.com/user-attachments/assets/beae1b6b-b19e-4e16-84e8-c4cddaba86f3)
+
+最终在 p2p/dial.go 中的 dial 方法中调用 SetupConn 来为节点创建 RLPx 连接：
+![image](https://github.com/user-attachments/assets/0d27a2bb-ff22-4922-a80a-e6c4f1304207)
+
+在 RLPx 通信的过程中，使用的加密方式为 ECIES (Elliptic Curve Integrated Encryption Scheme) 。
+
+- ECIES 加密流程
+    - 参数选择：
+        - 椭圆曲线：secp256k1。
+        - 密钥派生函数（KDF）：NIST SP 800-56 连接模式。
+        - MAC：HMAC-SHA256。
+        - 对称加密：AES-128-CTR。
+    - 加密步骤（Alice → Bob）：
+        - 生成随机数 `r`，计算临时公钥 `R = r*G`。
+        - 共享密钥：`S = ecdh(r, Bob的公钥Kb)`。
+        - 派生密钥：`kE || kM = KDF(S, 32)`（加密密钥和 MAC 密钥）。
+        - 加密消息：`c = AES(kE, iv, 明文)`。
+        - 生成认证码：`d = HMAC-SHA256(kM, iv || c)`。
+        - 发送数据：`R || iv || c || d`。
+    - 解密步骤（Bob）：
+        - 使用私钥计算共享密钥 `S = ecdh(Bob的私钥kb, R)`。
+        - 派生相同 `kE` 和 `kM`。
+        - 验证 `d` 的 MAC，解密 `c` 获得明文。
+- **节点身份**
+    - 每个节点维护静态 secp256k1 私钥，建议通过删除文件手动重置。
+    - 公钥通过私钥生成，作为节点唯一标识。
+
+其中 RLPx（基于 TCP） 和 Discv5（基于 UDP）是协同工作的，总体来说 Discv5 负责发现节点，并将节点的 ENR 数据保存在本地，而 RLPx 协议中使用 ENR 中的信息来建立连接，高效传输数据。
+
+- 分工流程
+    - 节点发现（discv5）：
+        - 通过 UDP 发现邻近节点，获取其 ENR（含 IP、端口、公钥）。
+    - 建立连接（RLPx）：
+        - 使用 ENR 中的 IP 和端口，通过 TCP 发起 RLPx 握手。
+        - RLPx 完成加密通信，传输区块、交易等数据。
+
 
 <!-- Content_END -->
