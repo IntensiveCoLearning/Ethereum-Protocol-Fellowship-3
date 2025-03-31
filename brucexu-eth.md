@@ -926,6 +926,67 @@ TODO 做一个 demo。
 之前有通过判断 msg.sender == tx.origin 来判断当前调用者是否为 EOA 钱包的逻辑，有了 7702 之后，这个判断可能会不成立。分析一下这种判断大概有三种 cases：
 
 1. 确保 msg.sender 是一个 EOA。当 EOA 使用 EIP-7702 发送交易时，msg.sender 仍然是 EOA 的地址值。
-2.
+
+# 2025.03.31
+
+## https://eip.fun/eips/eip-7702
+
+### Self-sponsoring: allowing tx.origin to set code
+
+2. EOA 检测还会用于避免 atomic sandwich 攻击，例如 flash loans。通过判断是否是 EOA 会避免将多笔交易放在一个 atomic transaction 里面执行。这种情况下会受到影响。
+
+TODO 做一个闪电贷的 demo。
+
+3. 预防 reentrancy 重入攻击。因为 EOA 没有 receive call back 函数，所以没法被循环调用。7702 之后，EOA 也可以有 code，就是有 receive callback 函数，然后实现重入攻击。
+
+TODO 做一个 EOA 重入攻击的 demo。
+
+但是 EIP 坐着没有搜索到这样的重入攻击的防护逻辑，所以感觉问题还好？这个可以这样做吗？
+
+EIP-7702 的执行流程：
+
+1. Alice 是一个 EOA，发起一笔 tx，使用了 EIP-7702 的结构和类型。因此需要额外包括：
+
+- 要执行的合约代码
+- 相关签名
+- 要调用的合约地址
+
+2. tx 被客户端执行，Alice 的 EOA 变成一个临时合约账户，代码被部署，然后相当于合约：
+
+- extcodesize(Alice) != 0 所以这种合约的判断就失效了
+
+3. Alice 的这边 tx 开始被执行，然后开始通过合约调用合约
+4. 交易执行完成，Alice 的账户的合约代码会被清除消失
+
+---
+
+为什么说 “tx.origin == msg.sender” 这种检查一直不安全？因为：
+
+它判断的是调用链最开始是不是同一个人，不代表调用者的意图
+
+攻击者可以诱导用户发交易，伪造出这种看似合法的调用结构
+
+本质上是一种 权限外包 的思维漏洞，用户被迫替攻击者执行危险操作
+
+而真正可靠的权限机制是：
+
+- 检查 msg.sender 是不是你信任的地址
+- 使用 ECDSA 签名验证（比如 OpenZeppelin 的 isValidSignature）
+- 或者用 ERC-1271 判断智能合约钱包的合法签名
+
+使用 tx.origin == msg.sender 做判断的合约一开始就有安全风险。
+
+topmost context 是指 EVM 开始执行的最高层 context，每一层合约调用，都是增加了一层 execution layer。
+
+---
+
+7702 是被设计为高度兼容最终的 Account Abstraction，算是一个过渡方案吧，但是不关联过多的 ERC-4337 和 RIP-7560 的细节。
+
+- 可以将 code 指向 ERC-4337 wallet code 来调用。TODO 做一个 demo
+- 可以兼容和组合目前的种种合约，不会创建两套系统，同时可以快速的、方便的接入使用 ERC-4337
+
+---
+
+需要考虑的一些安全注意事项，主要在签名验证之类的地方，后面再详细看看吧。
 
 <!-- Content_END -->
