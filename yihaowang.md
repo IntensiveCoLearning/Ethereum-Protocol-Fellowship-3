@@ -433,6 +433,28 @@ ETH 在未來的升級中，會進一步完善 fork-choice 規則，將更多安
 - Fork-Choice 的挑戰
 隨著 ETH 的發展，fork- 的挑戰將越來約複雜，尤其是當引入分片技術時，如何卻表再多條平行鏈中仍能確保一致性，並選擇最佳的鏈來繼續構建。
 
+### 2025.03.31
+#### Gasper
+Gasper 是 Ethereum PoS 的核心共識機制，它結合了 LMD GHOST（Latest Message Driven Greediest Heaviest Observed Subtree） 和 Casper FFG（Casper Friendly Finality Gadget） 來達成共識和最終性（Finality）
 
+**Gasper 的運作方式**
 
+Ethereum PoS 以 Slot（時槽）與 Epoch（時代） 為單位運作：
+- 1 個 Slot = 12 秒，在這 12 秒內，一個驗證者會被隨機選中來提議（propose）新的區塊。
+- 1 個 Epoch = 32 Slots（約 6.4 分鐘），每個 Epoch 內的驗證者會投票確保鏈的狀態達到最終性（Finality）。
+
+在這個過程中，Gasper 運用 LMD GHOST 來選擇最佳鏈，並使用 Casper FFG 來確保區塊最終性。
+
+**Gasper 由兩部分組成**
+
+- LMD GHOST（用於 Fork-Choice）: LMD GHOST 是 分叉選擇規則（Fork-Choice Rule），當區塊鏈發生分叉時，它決定哪條鏈應該被選為主鏈（Canonical Chain）
+  - 基本原則：選擇累積最多投票權重的區塊作為主鏈
+  - LMD（Latest Message Driven）：只考慮驗證者最近的一次投票，避免計算過時投票，提高效率
+  - GHOST（Greediest Heaviest Observed Subtree）：選擇權重最大的分支，確保鏈條延續性
+- Casper FFG（用於 Finality）: Casper FFG 是 最終性機制（Finality Gadget），確保區塊一旦確定就無法回滾
+  - 驗證者投票機制：每個 Epoch，驗證者會對區塊進行兩輪投票
+    - Source Checkpoint（來源檢查點）：驗證者確認這個區塊是否從之前的區塊延續
+    - Target Checkpoint（目標檢查點）：驗證者確認這個區塊是否應該被認定為最終確定的區塊
+  - 超過 2/3 的驗證者投票支持時，該區塊被確定為 Finalized（最終確定），不可更改
+    
 <!-- Content_END -->
