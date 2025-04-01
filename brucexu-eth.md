@@ -989,4 +989,22 @@ topmost context 是指 EVM 开始执行的最高层 context，每一层合约调
 
 需要考虑的一些安全注意事项，主要在签名验证之类的地方，后面再详细看看吧。
 
+# 2025.04.01
+
+## event logs
+
+在做 FS 的贡献内容存储方案设计，目前看下来使用 Event Logs 是比较方便的，因为需求是：
+
+1. 永久存储
+2. 直接通过合约读写，不需要额外的步骤（例如之前的 EAS）
+3. 较低的成本和 gas fee
+
+目前看下来 L2 的 Event logs gas fee 对于一个推特长度 140 bytes 几乎也没多少钱，理论计算是可行的。
+
+但是目前 L2 的 Event logs 是不存在 L1 的，仅仅在 L2 上面，可靠性可能存疑。此外 L1 的 Event logs 也仅仅存储在 full node 上面，因为跟合约不相关，内容量又比较大，所以在很多客户端或者轻量的可能不会存储。
+
+此外，由于一个 block gas 的限制，似乎是建议将内容切割成 1-2 kb 长度的 chunk 进行循环上传。
+
+https://docs.alchemy.com/docs/deep-dive-into-eth_getlogs
+
 <!-- Content_END -->

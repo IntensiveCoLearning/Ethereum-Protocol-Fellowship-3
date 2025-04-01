@@ -456,5 +456,15 @@ Ethereum PoS 以 Slot（時槽）與 Epoch（時代） 為單位運作：
     - Source Checkpoint（來源檢查點）：驗證者確認這個區塊是否從之前的區塊延續
     - Target Checkpoint（目標檢查點）：驗證者確認這個區塊是否應該被認定為最終確定的區塊
   - 超過 2/3 的驗證者投票支持時，該區塊被確定為 Finalized（最終確定），不可更改
-    
+
+### 2025.04.01
+#### Ethereum Virtual Machine（EVM）
+EVM（Ethereum Virtual Machine）是 Ethereum 的運行環境，負責執行智能合約（Smart Contracts）。它的功能類似於一台去中心化的全球計算機，運行 Solidity、Vyper 等語言撰寫的智能合約。
+
+EVM 的特性
+- 去中心化計算環境：EVM 允許智能合約在區塊鏈上執行，而無需依賴單一伺服器。
+- 圖靈完備（Turing-complete）：EVM 支援條件判斷、循環等邏輯運算，可以執行複雜的智能合約邏輯。
+- Gas 計費機制：執行合約時會消耗 Gas（以 ETH 支付），確保計算資源不被濫用。
+- 跨節點一致性：所有 Ethereum 節點運行相同的 EVM，確保區塊鏈上的狀態一致。
+
 <!-- Content_END -->

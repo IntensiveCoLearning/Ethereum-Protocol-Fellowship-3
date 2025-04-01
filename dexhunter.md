@@ -1054,8 +1054,66 @@ The EVM supports a rich set of opcodes divided into categories:
   - Miners can vote to adjust the block gas limit within certain constraints.
   - Ensures network scalability and security.
 
-### 2025.03.31
+### 2025.04.01
+
+Continue on EVM.
+
+Because there is an analogy for evm, is that it's like JVM (java virtual machine)
+So I am digging up for jvm
 
 
+#### Comparison of JVM and EVM
+
+Here's a comparison of the Java Virtual Machine (JVM) and the Ethereum Virtual Machine (EVM):
+
+**Similarities:**
+
+1.  **Virtual Machine Abstraction:** Both are `abstract machines` providing a `runtime environment`.
+2.  **Execution of Bytecode:** Both execute `bytecode`, an intermediate representation of source code.
+3.  **Memory Management (Conceptual):** Both handle `memory management`, though the mechanisms differ.
+4.  **Security Features:** Both incorporate `security features` to isolate and control code execution.
+5.  **Instruction Set:** Both have a defined `instruction set` (`opcodes` for EVM, bytecode instructions for JVM).
+
+**Differences:**
+
+1.  **Purpose and Environment:**
+    * **JVM:** `General-purpose virtual machine` for applications, typically runs on a single machine.
+    * **EVM:** `Decentralized virtual machine` for `smart contracts` on the Ethereum blockchain, runs on a network of nodes.
+
+2.  **Architecture:**
+    * **JVM:** Primarily a `register-based` virtual machine.
+    * **EVM:** A `256-bit stack-based` virtual machine.
+
+3.  **Memory Management:**
+    * **JVM:** Employs `automatic garbage collection (GC)` for heap memory.
+    * **EVM:** Has `manual` and `transaction-scoped` memory, no automatic GC.
+
+4.  **State Management:**
+    * **JVM:** Generally `stateless` between executions unless explicitly managed.
+    * **EVM:** Maintains a `global, persistent state` called the `World State` on the blockchain.
+
+5.  **Concurrency:**
+    * **JVM:** Supports concurrency through `threads`.
+    * **EVM:** Handles "concurrency" through the `sequential processing of transactions` within blocks.
+
+6.  **Determinism:**
+    * **JVM:** Generally deterministic for a single execution, but strict determinism across implementations isn't a core requirement.
+    * **EVM:** Is `strictly deterministic` to ensure consensus across the decentralized network.
+
+7.  **Gas/Resource Model:**
+    * **JVM:** Doesn't have a built-in cost model at the VM level.
+    * **EVM:** Has a `gas-based cost model` where each `opcode` has a gas cost.
+
+8.  **Immutability:**
+    * **JVM:** Code can be updated and redeployed.
+    * **EVM:** Smart contract code is generally `immutable` once deployed.
+
+9.  **Underlying Technology:**
+    * **JVM:** Typically runs on top of an `operating system`.
+    * **EVM:** Runs as part of a `decentralized blockchain network`.
+
+10. **Programming Languages:**
+    * **JVM:** Primarily for `Java`, but supports other JVM-compatible languages.
+    * **EVM:** Primarily for `Solidity`, but also supports other languages compiling to EVM bytecode.
 
 <!-- Content_END -->
