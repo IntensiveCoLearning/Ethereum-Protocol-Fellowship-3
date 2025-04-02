@@ -1116,4 +1116,13 @@ Here's a comparison of the Java Virtual Machine (JVM) and the Ethereum Virtual M
     * **JVM:** Primarily for `Java`, but supports other JVM-compatible languages.
     * **EVM:** Primarily for `Solidity`, but also supports other languages compiling to EVM bytecode.
 
+
+### 2025.04.02
+
+ethereum state
+
+以太坊状态机
+
+
+
 <!-- Content_END -->
