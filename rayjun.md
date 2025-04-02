@@ -897,5 +897,51 @@ Les（**Light Ethereum Subprotocol**）是专为资源受限设备设计的协�
         - 维护最低BV估计值（BLE），仅在 BLE ≥ 请求最大成本时发送请求
         - 动态调整请求速率，优先选择负载较低的服务器
 
+### 2025.04.02
+Tire 是以太坊的核心数据结构，用于存储以太坊的状态数据，使用的数据结构是：Merkle Patricia Trie（MPT），它结合了 Merkle Tree 和 Patricia Trie 的特点。
+
+- Merkle Tree
+    - 每个节点包含其子节点的哈希值，不是严格的二叉树，但是在以太坊中使用的是二叉树结构
+    - 根节点的哈希值可以验证整个数据集的完整性
+    - 支持轻客户端验证
+- Patricia Trie
+    - 前缀树（Trie）的一种变体
+    - 可以实现路径压缩
+    - 可以提供高效的查找和更新
+
+主要用途：
+
+- 存储账户状态（状态 trie）
+- 存储交易收据（收据 trie）
+- 存储区块头信息（状态根、收据根等）
+
+、、、Go
+type node interface {
+    cache() (hashNode, bool)
+    encode(w rlp.EncoderBuffer)
+    fstring(string) string
+}
+
+type (
+    fullNode struct {
+        Children [17]node
+        flags    nodeFlag
+    }
+    shortNode struct {
+        Key   []byte
+        Val   node
+        flags nodeFlag
+    }
+    hashNode  []byte
+    valueNode []byte
+)
+、、、
+
+节点类型说明：
+- valueNode：存储实际数据的叶节点
+- shortNode：包含键和值的节点，用于路径压缩
+- fullNode：包含16个分支的完整节点
+- hashNode：存储节点哈希的引用节点
+
 
 <!-- Content_END -->
