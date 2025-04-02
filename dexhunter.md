@@ -1123,6 +1123,8 @@ ethereum state
 
 以太坊状态机
 
+world state
 
+mapping of eth address (160-bits) to accounts (balance + nonce + storage + program code)
 
 <!-- Content_END -->
