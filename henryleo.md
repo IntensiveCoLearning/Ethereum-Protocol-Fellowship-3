@@ -413,5 +413,7 @@ $$Log_2(n)$$
 - VDF（可验证延迟函数）
 - ...
 
+### 2025.04.02
+接下来将花一点的时间研究ZK-STARKs。[参考](https://vitalik.eth.limo/general/2021/01/26/snarks.html)
 
 <!-- Content_END -->
