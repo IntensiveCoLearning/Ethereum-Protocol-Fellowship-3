@@ -467,7 +467,7 @@ $$(Priv * Pub)\space mod \space φ(Max) = 1 = (Priv*5)\space mod \space φ(91)$$
 $$φ(91) = (p - 1)(q - 1)$$
 只需要穷举一个素数对，使得：
 $$q*p=91$$
-了解这一点之后，目前有一些方案计算因式分解比较高效，而且当$Max$越大效率越高，甚至高于加密时乘以大数的难度！这意味着本来我们期待用更大的素数对相乘以获得更好的安全效果这实际上在RSA中不可行。
+“因式分解”通常特指将一个合数分解成它的质因数的乘积。了解这一点之后，目前有一些方案计算因式分解比较高效，而且当$Max$越大效率越高，甚至高于加密时乘以大数的难度！这意味着本来我们期待用更大的素数对相乘以获得更好的安全效果这实际上在RSA中不可行。
 
 **Refs**
 - [椭圆曲线密码学入门 | Nick Sullivan](https://blog.cloudflare.com/a-relatively-easy-to-understand-primer-on-elliptic-curve-cryptography/)
