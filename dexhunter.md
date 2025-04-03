@@ -1127,4 +1127,15 @@ world state
 
 mapping of eth address (160-bits) to accounts (balance + nonce + storage + program code)
 
+### 2025.04.03
+
+smart contract security best practices
+
+* minimalism/simplicity
+* code reuse (use well defined lib)
+* code quality 
+* readability/auditability (easy to audit, opensource)
+* test coverage
+
+
 <!-- Content_END -->
