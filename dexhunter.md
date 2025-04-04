@@ -1138,4 +1138,46 @@ smart contract security best practices
 * test coverage
 
 
+### 2025.04.04
+
+Some more resources on security
+
+[link](https://consensysdiligence.github.io/smart-contract-best-practices/)
+
+#### General philosophy
+
+* prepare for failure
+* stay up to date
+* keep it simple
+* rolling out
+* blockchain perperties
+* simplicity vs. complexity
+
+#### Developement Recommendation
+
+* external calls
+    * use caution when making external calls
+    * mark untrusted contracts
+    * avoid state changes after external calls
+    * don't use `transfer()` or `send()`
+    * handle errors in external calls
+    * favor *pull* over *push* for external calls
+    * don't deletegatecall to unstrusted code
+
+```Solidity
+// bad
+someAddress.send(55);
+someAddress.call.value(55)(""); // this is doubly dangerous, as it will forward all remaining gas and doesn't check for result
+someAddress.call.value(100)(bytes4(sha3("deposit()"))); // if deposit throws an exception, the raw call() will only return false and transaction will NOT be reverted
+
+// good
+(bool success, ) = someAddress.call.value(55)("");
+if(!success) {
+    // handle failure code
+}
+
+ExternalContract(someAddress).deposit.value(100)();
+```
+
+
 <!-- Content_END -->
