@@ -472,4 +472,11 @@ $$q*p=91$$
 **Refs**
 - [椭圆曲线密码学入门 | Nick Sullivan](https://blog.cloudflare.com/a-relatively-easy-to-understand-primer-on-elliptic-curve-cryptography/)
 
+
+### 2025.04.04
+路径：要了解ZK-STARKs，ECC是基础，要了解ECC先了解RSA。
+
+今天抽半个小时研究ECC，没有很看懂！下次继续努力~
+
+
 <!-- Content_END -->
