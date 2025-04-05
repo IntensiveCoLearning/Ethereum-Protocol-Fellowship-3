@@ -1179,7 +1179,7 @@ if(!success) {
 ExternalContract(someAddress).deposit.value(100)();
 ```
 
-2025.04.05
+### 2025.04.05
 
 Continue on the security practice
 
@@ -1192,5 +1192,7 @@ Continue on the security practice
 
 [1]: https://en.wikipedia.org/wiki/Commitment_scheme
 [2]: https://en.wikipedia.org/wiki/Two%27s_complement#Most_negative_number
+
+### 2025.04.06
 
 <!-- Content_END -->
