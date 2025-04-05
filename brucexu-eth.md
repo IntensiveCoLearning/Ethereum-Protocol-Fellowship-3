@@ -1011,4 +1011,67 @@ https://docs.alchemy.com/docs/deep-dive-into-eth_getlogs
 
 ## https://hackmd.io/@colinlyguo/SyAZWMmr1x
 
+EIP-7702 introduces a new transaction type that allows an Externally Owned Account (EOA) to specify an address as the pointer to its implementation. For example, this address could be a generic proxy or minimal proxy contract that forwards call messages to an upgradable wallet implementation.
+
+这个描述还是比较形象的。一种新的 tx type，然后支持 EAO 指向一个 address 表示的是它的实现。这样就有点像 proxy 了，将 call messages 传递到那个 address。这样的话，有点像一个可升级的智能合约钱包。
+
+提供了一些 features：
+TODO 休闲黑客松 EIP 7702 主题，拉上 EF，等 Pectra 上线之后，一周学习，周末打。
+
+- Social recovery：防止 private keys 丢失 ？？ 如何实现？？
+- Transaction batching：合并交易，签名一次即可。FS 2.0 可以使用这种方式投票 + dispatch，还可以 sponsor gas
+- Transaction Sponsorship：找人代付
+- Arbitrary signing keys：支持 WebAuth、P256、BLS 等签名类型？？
+- Session Keys：Users 可以生成一个 delegate session keys 带有 lifecycle 和 scoped permissions 给到服务商。
+- 自定义 gas token、多签验证等等功能
+
+这简直是提供了特别大的能力。跟 ERC-4337 结合，可以很好的集成在一起。Once a user authorizes an address with a smart contract wallet supporting ERC-4337, the EOA address can serve as the sender field of UserOperation in ERC-4337. 不用单独部署一个 AA 钱包，就可以使用相关的功能。
+
+Smart EOAs 不能解决 private key 被别人知道的问题，private key 还是最高权限的。例如 EIP-7377 可以将 EOAs 迁移到 AA 钱包，还有其他的 EIP 可以在未来解决。
+
+有意思，钱包可以要求用户在 authorizing EOA as a contract wallet 之后，删除 private key 以防止私钥泄漏。可以避免 local cache 或者供应链攻击。TODO 按照我的理解，授权是在 tx 的过程中进行的？还是需要 EOA sign 对应的 tx 才可以实现 authorizing？如何签名呢？
+
+# 2025.04.05
+
+## https://hackmd.io/@colinlyguo/SyAZWMmr1x
+
+Smart EOA vs SC 优势：
+
+1. 开启 SC 高级功能的同时，保持地址不变，有助于持有 SBT。
+2. 简化 stealth addresses 的实现？？TODO
+3. 兼容目前的系统
+
+### Protocol Overview
+
+新增一个 tx type，SET_CODE_TX_TYPE 0x04，然后 payload 增加了一些字段，最重要的是 authorization_list 字段：
+
+\text{authorization_list} = [ \, [ \, \text{chain_id}, \, \text{address}, \, \text{nonce}, \, \text{y_parity}, \, \text{r}, \, \text{s} \, ], \, \dots \, ]
+
+address 是目标代理 code 的地址。
+
+while the EOA's address can be recovered from the payload (chain_id, address,nonce) and the signature (y_parity, r, s). 
+
+oh shit！只要有 signature 就可以代替 private key 来执行相关命令，所以这里需要限定授权的 chain id 和 address，只能让这个地址进行工作，这样就实现了无需反复签名或者必须依赖 private key 了呀！TODO FairSharing 投票授权加一下这个功能。
+
+TODO 需要 7702 的安全风险 reviewers，类似 revoke cash，展示当前 eoa 可能存在的 7702 风险，并且提供风险监测服务。可以提供一个通用 API，返回当前操作的详细解读，进行确认。
+
+### 一些细节的 topics 分析
+
+authorization_list 必须是非空的。客户端需要验证里面的每个参数，确保准确无误。
+
+In each tuple of the authorization_list, the address field represents the authorized address, while the signer’s address is derived from signature and payload. 这个 Signer 地址还是会变的吗？
+
+这个设计可以实现 sponsored transactions？如何实现 todo？？然后即便是一个 fails，其他的 authorization 不受到影响。
+
+EIP-7702 introduces a new mechanism that increments the nonce of an EOA after each successful authorization. 
+
+This means that if a transaction includes an authorization list and the authorization signer is the same as the transaction signer, you must set tx.nonce to account.nonce and authorization.nonce to account.nonce + 1.
+
+With EIP-7702, from the perspective of an EOA, ETH balances can now decrease not only through signed transactions but also through transactions triggering contract executions. From the view of smart contracts, EOAs can directly send transactions to change account states. TODO 做个 Demo 吧，直接修改数值那 eth 去哪里了？
+
+之前比较简单，因为 EOAs 只能通过 signed txs 才能发送 ETH，所以 client 可以验证 tx pools 里面 pending txs 就可以判断出是否有足够余额。但是现在需要更多判断，因为 7702 delegated code 可以任何时候修改 EOA 余额。
+
+
+
+
 <!-- Content_END -->
