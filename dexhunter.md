@@ -1179,5 +1179,20 @@ if(!success) {
 ExternalContract(someAddress).deposit.value(100)();
 ```
 
+### 2025.04.05
+
+Continue on the security practice
+
+* Beware of coding an invariant that strictly checks the balance of a contract.
+* for publishing data on-chain: use commitment schemes[1] with separate phases: first commit using the hash of the values and in a later phase revealing the values.
+* Do not make refund or claim processes dependent on a specific party performing a particular action with no other way of getting the funds out
+    (1) provide a way of circumventing non-participating participants, perhaps through a time limit, and 
+    (2) consider adding economic incentive for participants to submit information in all of the situations in which they are supposed to do so.
+* negation of signed integers[2]
+
+[1]: https://en.wikipedia.org/wiki/Commitment_scheme
+[2]: https://en.wikipedia.org/wiki/Two%27s_complement#Most_negative_number
+
+### 2025.04.06
 
 <!-- Content_END -->
