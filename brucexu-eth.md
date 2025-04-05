@@ -1071,6 +1071,35 @@ With EIP-7702, from the perspective of an EOA, ETH balances can now decrease not
 
 之前比较简单，因为 EOAs 只能通过 signed txs 才能发送 ETH，所以 client 可以验证 tx pools 里面 pending txs 就可以判断出是否有足够余额。但是现在需要更多判断，因为 7702 delegated code 可以任何时候修改 EOA 余额。
 
+# 2025.04.06
+
+## https://hackmd.io/@colinlyguo/SyAZWMmr1x
+
+Revocation 取消，可以通过设置 address field 为 0x0000000000000000000000000000000000000000 取消所有的授权。这样会把 account's code 清空，code hash 设置为 empty hash。
+
+这个有点违背我先前的理解，这个写入到底是永久的，还是发送交易的时候临时写入的？如果是临时写入的，如何实现 social recovery 呢？如果没有 private key，如何发送这个特殊的交易呢？
+
+Re-delegating an account requires careful storage management to avoid collisions, which can otherwise lead to undefined behavior. 
+
+TODO 做一个 EIP Fun extension，可以识别页面的 EIP、ERC 然后到 eip.fun 官网。然后可以在后面加个括号，使用一句话来解释这个 RIP、EIP、ERC 的效果，方便直接理解上下文。
+
+### Core Protocol Implementations
+
+TODO 全部的 geth 7702 实现在这里，学习下看看未来如何增加 https://github.com/ethereum/go-ethereum/pull/30078
+
+Sending an EIP-7702 Transaction
+
+To send an EIP-7702 transaction, the user first needs to fill in all non-signature fields outside of the authorization_list (definition of SetCodeTx here). Then, the user constructs the authorization_list here. For each authorization tuple, the user fills in the non-signature fields first, and then signs it using the SignAuth function.
+
+SignAuth 是什么？
+
+The user's EOA private key is required for signing. Signing involves hashing the authorization details, which include a magic number 0x05, a chain ID, the delegated code address, and the current nonce of the EOA.
+
+还是需要 EOA 私钥签名，内容包括 auth details 的 hash。
+
+Notably, setting the chain ID to 0 allows the authorization to be replayed across all EVM-compatible chains supporting EIP-7702, provided the nonce matches.
+
+可以实现多个 evm 链重放，但是需要 nonce match，看来 nonce 这里的逻辑还是需要搞清楚一些。实际上，每个 evm 的 nonce 可能不一样，所以可能也很难在不同的链重放。
 
 
 
