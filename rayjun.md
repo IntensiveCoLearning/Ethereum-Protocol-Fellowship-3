@@ -1072,4 +1072,23 @@ type (
                 - 所有底层变更最终导致根节点的哈希更新 → 新根哈希写入区块头（`stateRoot`）
 
 
+### 2025.04.06
+hashNode 表示一个节点的哈希值
+![image](https://github.com/user-attachments/assets/194695d6-7428-40cb-8c02-9c9a573208fa)
+
+cache 方法用来判断一个节点及其子节点是否被修改，如果没有被修改，那么直接返回节点的 hash 值就可以，如果修改了，就重新计算 hash 值：
+![image](https://github.com/user-attachments/assets/5011d358-6160-43a5-9f78-b4486c71265b)
+
+先判断是否真的需要重新计算，有些只读的情况下，数据没有改变，不需要重新提交：
+![image](https://github.com/user-attachments/assets/f359cde7-d277-430b-8475-3264fb4914a2)
+
+如果真的需要重新提交，那么就重新计算 hash 值：
+![image](https://github.com/user-attachments/assets/38ad6844-af88-4404-a799-927846ba0745)
+
+commit 是一个递归的过程，从 root 到子节点的计算过程，如果子节点没有被修改，直接返回 hash 值，不需要重新计算：
+![image](https://github.com/user-attachments/assets/2def9373-2d64-4580-9e4f-c9a2dca6a1a1)
+
+
+
+
 <!-- Content_END -->
