@@ -1089,6 +1089,110 @@ commit 是一个递归的过程，从 root 到子节点的计算过程，如果�
 ![image](https://github.com/user-attachments/assets/2def9373-2d64-4580-9e4f-c9a2dca6a1a1)
 
 
+### 2025.04.07
+trie.go 文件实现了以太坊的 Merkle Patricia Trie (MPT) 数据结构的核心功能。主要包括以下的功能：
+```Go
+type Trie struct {
+    root  node           // Trie 的根节点
+    owner common.Hash    // Trie 的所有者标识（通常是账户地址）
+    
+    committed bool       // 标记 Trie 是否已提交
+    unhashed int         // 自上次哈希操作以来插入的叶子节点数量
+    uncommitted int      // 自上次提交以来的更新次数
+    
+    reader *trieReader   // 用于从底层存储检索节点的处理器
+    tracer *tracer       // 用于跟踪 Trie 变更的工具
+}
+```
+
+trie 的创建，者个函数创建一个新的 Trie 实例，如果提供了非空的根哈希，则从数据库加载根节点：
+```Go
+func New(id *ID, db database.NodeDatabase) (*Trie, error) {
+    // 创建 trieReader 用于从数据库读取节点
+    reader, err := newTrieReader(id.StateRoot, id.Owner, db)
+    if err != nil {
+        return nil, err
+    }
+    
+    // 初始化 Trie 结构
+    trie := &Trie{
+        owner:  id.Owner,
+        reader: reader,
+        tracer: newTracer(),
+    }
+    
+    // 如果根哈希不为空，则从数据库加载根节点
+    if id.Root != (common.Hash{}) && id.Root != types.EmptyRootHash {
+        rootnode, err := trie.resolveAndTrack(id.Root[:], nil)
+        if err != nil {
+            return nil, err
+        }
+        trie.root = rootnode
+    }
+    return trie, nil
+}
+```
+
+get 方法是一个递归函数，根据节点类型进行不同的处理：
+
+```Go
+func (t *Trie) Get(key []byte) ([]byte, error) {
+    // 检查 Trie 是否已提交（不可用）
+    if t.committed {
+        return nil, ErrCommitted
+    }
+    
+    // 递归查询节点信息
+    value, newroot, didResolve, err := t.get(t.root, keybytesToHex(key), 0)
+    // .....
+}
+
+```
+
+更新操作实际是做删除或者插入操作：
+```Go
+func (t *Trie) Update(key, value []byte) error {
+    // 检查 Trie 是否已提交（不可用）
+    if t.committed {
+        return ErrCommitted
+    }
+    return t.update(key, value)
+}
+
+func (t *Trie) update(key, value []byte) error {
+    // 增加未哈希和未提交计数器
+    t.unhashed++
+    t.uncommitted++
+    
+    // 将原始键转换为十六进制格式
+    k := keybytesToHex(key)
+    
+    if len(value) != 0 {
+        // 插入或更新键值对
+        _, n, err := t.insert(t.root, nil, k, valueNode(value))
+        if err != nil {
+            return err
+        }
+        t.root = n
+    } else {
+        // 删除键值对
+        _, n, err := t.delete(t.root, nil, k)
+        if err != nil {
+            return err
+        }
+        t.root = n
+    }
+    return nil
+}
+
+```
+
+插入操作也是一个递归的过程，同样是根据不同的节点类型来做出相应的操作。
+
+删除也是一个复杂的递归操作，根据节点类型进行不同的处理，并在删除后尝试简化 Trie 结构
+
+在做完更新之后，需要将 trie 重新 commit。
+
 
 
 <!-- Content_END -->
