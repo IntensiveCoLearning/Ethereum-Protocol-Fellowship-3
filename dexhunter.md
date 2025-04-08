@@ -1195,4 +1195,28 @@ Continue on the security practice
 
 ### 2025.04.06
 
+Continue on security[1]
+
+#### Precaution
+
+General philosophy: prepare for failure
+
+* Upgradeability: 
+* Circuit Breakers: break if there a bug
+* Speed Bumps: slow down actions, time to recover when maclious actions done
+* Rate limiting
+* Deployment
+    * Have a full test suite with 100% test coverage (or close to it)
+    * Deploy on your own testnet
+    * Deploy on the public testnet with substantial testing and bug bounties
+    * Exhaustive testing should allow various players to interact with the contract at volume
+    * Deploy on the mainnet in beta, with limits to the amount at risk
+* Safe Haven (run bounty programs to find bugs)
+
+[1]: https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/
+
+### 2025.04.07
+
+
+
 <!-- Content_END -->
