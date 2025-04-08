@@ -1101,6 +1101,97 @@ Notably, setting the chain ID to 0 allows the authorization to be replayed acros
 
 可以实现多个 evm 链重放，但是需要 nonce match，看来 nonce 这里的逻辑还是需要搞清楚一些。实际上，每个 evm 的 nonce 可能不一样，所以可能也很难在不同的链重放。
 
+# 2025.04.07
+
+## 技术实现
+
+Once all fields except the signature fields of transaction are prepared, the user initializes the transaction (instructions here) and a "prague signer" (which adds support for EIP-7702 transaction hashing). The user then signs the transaction using SignTx and serializes it into a byte array using RLP encoding via MarshalBinary. Finally, the RLP byte array of transaction is hex-encoded and sent via the eth_sendRawTransaction RPC method.
+
+TODO 需要看看原文和对应的代码，目前在飞机上，看不到。
+
+简单的说：
+
+1. 组装用户的请求，包括 delegated code address 等
+2. 签名和序列化压缩
+3. 发送 RPC
+4. 节点相互同步
+5. block proposer 检查：1. 不是一个合约创建 tx 2. 包括至少一个 authorization operation
+6. 计算 auth 部分的 gas 消耗
+7. 开始挨个执行 auth tuple，做出相应的操作
+  1. 判断 ChainID = 0？
+  2. Nonce 没有超过最大
+  3. 验证 signature values，还原 signer address（其实是 public key）
+  4. 没有 code 或者 exisiting delegation，排除 SC
+
+TODO 授权 MCP service provider？实现无私钥自动授权执行命令。
+
+## Nonce Increment Logic
+
+因为不像以前那样，一次执行一个 tx，所以 nonce 的逻辑改变了。会有两个 check：
+
+1. Transaction Nonce Validation and Increment: The transaction nonce is first checked to ensure it matches the account's current nonce in the state (validation here). Once validated, the transaction nonce is incremented (increment here).
+2. Authorization Nonce Validation and Increment: For each authorization tuple in the authorization_list, the auth.Nonce is validated to ensure it matches the current nonce of the signing account (validation here). After successful validation, the nonce associated with the authorization is incremented (increment here).
+
+新增了一个 authorization nonce，跟 tx nonce 分开处理了看来是。TODO 代码验证一下。
+
+Users can use eth_getTransactionByHash and eth_getTransactionReceipt to query a transaction's status. 
+
+有一些 Instruction Modifications：
+
+- EXTCODECOPY：return 0xef01
+- EXTCODESIZE：2 the byte length of 0xef01
+- EXTCODEHASH：Keccak256 hash of 0xef01
+- CALL, CALLCODE, DELEGATECALL, and STATICCALL will load the code from the delegated code address and execute it in the context of the smart EOA. 有点像 proxy。不合法的 delegations 会被跳过。
+- CALL、CALLCODE、DELEGATEDCALL、STATICCALL 的 gas 有所调整
+
+# 2025.04.08
+
+## 调用 Smart EOAs
+
+类似 call 一个 smart contract。就是在 tx 的 to 字段（7702 tx 中的 destination）设置为 Smart EOA address，就可以去调用这个 EOA 上面的参数了。
+
+原来是通过这种方式实现无私钥的调用，但是还是需要构造一个 tx，可能需要一个随机或者 sponsor 的 EOA？TODO 做个 demo 试试看。
+
+Nodes 仅仅处理 one level of delegation，避免复杂化和递归死循环。
+
+## 功能实现方案
+
+### 创建钱包
+
+TODO 实际跑一下 demo。
+
+一个 tx 合并多个 txs 的功能，这也就意味着 authorization 的 tuple 具备链式调用的可能？但是这样的话，有一些由于问题被跳过，难道不会有问题？反正签名一次，就可以完成多笔操作，避免重复签名。
+
+由于 tx sender 没有设置，所以可以先签名生成 payload，之后被 third-party EOA 来提交上去。这样就实现了 sponsor tx service。比如使用代付服务的时候，可以通过 gitcoin passport scorer 的检测来避免女巫攻击。
+
+TODO 跟 gas station 的区别？感觉这里可以创建一个 gas 代付以及跨链代付的基础服务，抹平 L2 之间 gas fee 和操作的问题。实现 Arb 消费 OP 的 gas，进行操作。
+
+Preventing signing key tampering 这个没看懂 TODO
+
+### Executing Calls
+
+The user uses the WebAuthn key to sign the contract call, and extract the needed fields in the signature based on the specific wallet implementation.
+
+### Recovery from Private Key Loss
+
+When the private key is lost, the user can simply use their registered signing key to transfer assets from the EOA account.
+
+TODO 授权转移资产合约是不是很危险？别人难道不会去调用？或许可以提供这种找回服务，授权转移到指定的钱包地址，这样 eoa pk 丢失了可以找回资产。需要增加一些 social recovery 或者 multiple guardinas 的机制来 move the balance。
+
+### ZK Recovery
+
+EIP-7702 enables wallet recovery by Zero-Knowledge Proof (ZKP), through delegating to a contract that supports these functionalities. One advantage of ZKP is verifying user information without compromising privacy. For instance, the authentication can leverage OpenID providers like Google or Facebook to issue JSON Web Tokens (JWTs) as a witness for ZKP, utilizing established identity verification infrastructure.
+
+TODO ZKP recovery demo 跑一下。
+
+Here's an example of a ZK recovery based on EIP-7702 provided by zklogin. To change the wallet's signing key, the user must use a new WebAuthn key to go through the login flow of an OpenID provider (in the example, Google) to obtain a JWT. This JWT is then used to generate the proof. Finally, the proof along with additional metadata from the JWT and the new WebAuthn public key are submitted to the contract to update the signing key.
+
+### Session Keys and Subscriptions
+
+in traditional systems like credit cards, "trusted" subscription-based payment services can reduce the cognitive cost of authorization.
+
+可以创建独立的 key 用来签署一些低风险的签名，创建一个 signing key，然后保存在 local，之后可以被读取，由前端自动签署操作，不需要 wallet prompts。
+
 
 
 <!-- Content_END -->
