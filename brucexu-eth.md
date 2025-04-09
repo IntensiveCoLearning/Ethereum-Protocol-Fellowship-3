@@ -1193,5 +1193,29 @@ in traditional systems like credit cards, "trusted" subscription-based payment s
 可以创建独立的 key 用来签署一些低风险的签名，创建一个 signing key，然后保存在 local，之后可以被读取，由前端自动签署操作，不需要 wallet prompts。
 
 
+# 2025.04.09
+
+## EIP-7702 in Roadmaps of Ethereum and L2s
+
+EIP-7702 can help EOA users experience the functionalities of SC wallets, such as social recovery, subscriptions, etc. However, because it retains the existence of private keys, it cannot completely replace ERC-4337. For users who have applied EIP-7702, how can they fully obtain the security guarantees of SC wallets?
+
+With slight modifications, it could support the migration of EIP-7702 accounts to SC accounts. e.g. adding a deactivated field in the account state for deactivated EOA private keys.
+
+通过一些修改和特殊的字段，直接让 EOA 只能按照 SC 的方式被调用，实现 EOA 升级到 AA 钱包。
+
+a user can upgrade its delegated code to fully migrate to an EVM Object Format (EOF) contract, taking advantage of the new upgrade schemes supported by EOF and removing the need for a legacy proxy contract.
+
+TODO EOF 是什么意思？主要做什么用？
+
+On L2, RIP-7560 has been designed to pioneer the experimentation and implementation of native AA on L2, along with related proposals: RIP-7711, RIP-7712, and RIP-7696. RIP-7560 integrates the tooling provided by ERC-4337 with the design of native AA in EIP-2938, introducing a new AA_TX_TYPE transaction.
+
+实际上，整个以太坊的运行，就是 tx + sign，签名证明这是你发出的 tx，然后被验证之后，保存到 state 里面。Native AA？也需要有相关 EOA 来触发和调用吧？TODO 这里需要验证一下。
+
+using the contract address as tx.origin 是 Native AA 的一些优势。
+
+On Ethereum, EIP-7701 builds upon the design of RIP-7560 to propose a native AA mechanism.
+
+By leveraging EOF, users can upgrade their smart EOAs using EIP-7702 to ensure compatibility with EIP-7701, either by migrating to new EOF-based contracts or by updating their proxy contract's implementation address.
+
 
 <!-- Content_END -->
