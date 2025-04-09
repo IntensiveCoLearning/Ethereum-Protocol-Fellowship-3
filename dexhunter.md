@@ -1215,7 +1215,50 @@ General philosophy: prepare for failure
 
 [1]: https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/
 
-### 2025.04.07
+# 2025.04.07
+
+## Solidity specific
+
+* `assert()`, `require()`, `revert()`
+* Modifiers as Guards
+* Integer Division
+* Abstract vs Interfaces
+* Fallback Functions
+* Payability
+* Visibility
+* Locking Pragmas
+* Event Monitoring
+* Shadowing
+* tx.origin
+* Timestamp Dependence
+* Complext Inheritrance
+* Interface Types
+* EXTCODESIZE Checks
+
+TODO: Read specific cases and note down
+
+# 2025.04.08
+
+## Token specific
+
+### Standardization
+
+* EIP20
+* EIP721 (nft)
+
+
+### Frontrunning
+
+* be careful with `approve()`
+* [details here](https://consensysdiligence.github.io/smart-contract-best-practices/attacks/frontrunning/)
+-> To prevent, the best remediation is to **remove the benefit of front-running in the application** i.e. remove the importance of transaction ordering or time
+
+### Zero Address
+
+### Contract Address
+
+* prevent transfer tokens to the same address of the smart contract
+-> Tokens might stuck at smart contract like in EOS case
 
 
 
