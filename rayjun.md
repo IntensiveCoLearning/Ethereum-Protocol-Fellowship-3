@@ -1205,4 +1205,43 @@ Trie 的 Commit 操作是以太坊状态管理中的关键环节，在需要将�
 6. 重置未提交计数器：Commit 完成后，会重置未提交修改的计数器，为下一轮操作做准备
 
 
+### 2025.04.09
+triedb 模块是trie 的持久化层，负责将 trie 的节点数据持久化到数据库中。简单来说，trie 和 triedb 的关系就像内存中的数据结构和磁盘上的存储系统：
+
+- trie 是内存中的数据结构，负责高效的数据操作
+- triedb 是持久化层，负责将 trie 的数据持久化到数据库
+- 两者配合工作，trie 负责计算和操作，triedb 负责存储和检索
+
+在需要处理状态变化的场景，triedb 使用 NodeDatabase 来创建 trie：
+![image](https://github.com/user-attachments/assets/8ac80fe9-1023-4a9f-a42b-dacb4a8b97fb)
+
+trie 在创建时，也需要接收一个 NodeDatabase 参数，使用 triedb 提供的 NodeDatabase 来创建 trie， trie 的所有读写操作都会通过 triedb 来访问实际的存储，当需要提交更改时，通过 triedb 来持久化这些更改：
+![image](https://github.com/user-attachments/assets/d752d66e-26b4-4fd4-bb2c-cd58eac34307)
+
+新建一个 DiffLayer，会在一个已经存在的 layer 上创建一个新的 Layer：
+![image](https://github.com/user-attachments/assets/84f368d6-60e8-4a00-97c9-135a4d0d79e2)
+
+在 triedb 中，使用 layer 的设计来实现不同层级的逻辑，让每层只专注处理当前的层的逻辑，而不需要关心其他层的设计：
+```Go
+type layer interface {
+	
+	node(owner common.Hash, path []byte, depth int) ([]byte, common.Hash, *nodeLoc, error)
+	account(hash common.Hash, depth int) ([]byte, error)
+	storage(accountHash, storageHash common.Hash, depth int) ([]byte, error)
+	rootHash() common.Hash
+	stateID() uint64
+	parentLayer() layer
+	update(root common.Hash, id uint64, block uint64, nodes *nodeSet, states *StateSetWithOrigin) *diffLayer
+	journal(w io.Writer) error
+} 
+```
+
+在 triedb 中有 diffLayer 和 diskLayer 实现了 layer 接口。layer 的设计很有意思，通过层级来表示存储版本，difflayer 用来临时存储状态变更，可以同时存在多个 difflayer，disklayer 作为持久化层，负责数据的最终持久化，在一个 triedb 的实例中，只能有一个 disklayer 存在：
+
+- 从上到下：diffLayer -> diffLayer -> ... -> diskLayer
+- diffLayer 只存储与父层的差异
+- 每个层都有唯一的 root 和 id
+- 层间通过 parent 指针连接
+- diffLayer -> diskLayer: 通过 persist() 递归合并
+
 <!-- Content_END -->
