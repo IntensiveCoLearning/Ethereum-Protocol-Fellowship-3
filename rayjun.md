@@ -1244,4 +1244,36 @@ type layer interface {
 - 层间通过 parent 指针连接
 - diffLayer -> diskLayer: 通过 persist() 递归合并
 
+
+### 2025.04.10
+ethdb 是对数据库层的抽象，比如当前主流的数据库使 leveldb，ethdb 对向 triedb 提供向数据库进行 kv 读写的接口。 
+
+1. ethdb 是底层的通用键值对存储，提供基础的存储能力
+2. triedb 是基于 ethdb 的高级状态存储系统，专门用于管理 Ethereum 的状态树
+3. triedb 通过 disklayer 与 ethdb 交互，将状态数据持久化到 ethdb
+4. ethdb 为 triedb 提供了性能优化的基础，而 triedb 在此基础上实现了更高级的状态管理功能
+
+ethdb 提供了四个主要的接口：
+```Go
+type KeyValueReader interface {
+	Has(key []byte) (bool, error)
+	Get(key []byte) ([]byte, error)
+}
+
+type KeyValueWriter interface {
+	Put(key []byte, value []byte) error
+	Delete(key []byte) error
+}
+
+type KeyValueRangeDeleter interface {
+	DeleteRange(start, end []byte) error
+}
+
+type KeyValueStater interface {
+	Stat() (string, error)
+}
+```
+其他更复杂的功能也是由这几个接口来组合完成，这也是 Go 语言中常用的方式。此外，在 core/rawdb 中的实现在以太坊的协议中实现一些数据的操作，这些是逻辑层的业务，也是通过调用 ethdb 的能力来完成。
+
+
 <!-- Content_END -->
