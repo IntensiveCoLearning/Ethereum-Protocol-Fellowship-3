@@ -1306,5 +1306,26 @@ e.g., You can lose all your money, hacker can vote for certain outcomes
 * Names of programmers and/or other important parties
 * Chat room where questions can be asked
 
+# 2025.04.10
+
+
+## Security Tools
+
+* Visualization
+* Static and Dynamic Analysis
+* Classification
+* Testing
+* Linters and Formatters
+
+## Bug Bounty Programs
+
+refer [here](https://consensysdiligence.github.io/smart-contract-best-practices/bug-bounty-programs/) for details
+
+## Attack References
+
+click [here](https://consensysdiligence.github.io/smart-contract-best-practices/attacks/)
+
+
+
 
 <!-- Content_END -->
