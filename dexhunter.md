@@ -1326,6 +1326,23 @@ refer [here](https://consensysdiligence.github.io/smart-contract-best-practices/
 click [here](https://consensysdiligence.github.io/smart-contract-best-practices/attacks/)
 
 
+# 2025.04.11
+
+## Attacks
+
+*   **Reentrancy**: Intra- and inter-function reentrancy attacks and potentially faulty solutions to them.
+*   **Oracle Manipulation**: Manipulation of external data providers and potential solutions to oracle security issues.
+*   **Frontrunning**: A definition and taxonomy around frontrunning and related attacks.
+*   **Timestamp Dependence**: Attacks relating to the timing of a transaction.
+*   **Insecure Arithmetic**: Integer overflows and underflows.
+*   **Denial of Service**: Denial of service attacks through unexpected reverts and the block gas limit.
+*   **Griefing**: Attacks relating to bad faith players around a smart contract system.
+*   **Force Feeding**: Forcing Ether to be sent to smart contracts to manipulate balance checks.
+*   **Deprecated/Historical**: Attacks that are part of Ethereum's history and vulnerabilities that have been fixed on a (Solidity) compiler level.
+*   **More**: Where to find more information about vulnerabilities and weaknesses.
+
+[Source](https://consensysdiligence.github.io/smart-contract-best-practices/attacks/)
+
 
 
 <!-- Content_END -->
