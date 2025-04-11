@@ -1276,4 +1276,63 @@ type KeyValueStater interface {
 其他更复杂的功能也是由这几个接口来组合完成，这也是 Go 语言中常用的方式。此外，在 core/rawdb 中的实现在以太坊的协议中实现一些数据的操作，这些是逻辑层的业务，也是通过调用 ethdb 的能力来完成。
 
 
+### 2025.04.11
+EVM 是以太坊的核心组件，在 `core/vm` 中实现，EVM 是一个基于栈的虚拟机，负责执行智能合约代码，提供的核心功能包括：
+
+- 提供EVM执行环境
+- 实现所有EVM操作码(opcodes)
+- 处理合约调用和创建
+- 管理合约执行的状态和上下文
+- 实现gas计算和消耗机制
+
+EVM 的实现有三个主要的组件， EVM 结构体定义了 EVM 的总体结构及依赖，包括执行上下文，状态数据库依赖等等，EVMInterpreter 结构体定义了解释器的实现，负责执行 EVM 字节码，Contract 结构体封装合约调用的具体参数，包括调用者、合约代码、输入等等，并且在 opcodes.go 中定义了当前所有的操作码：
+```Go
+// EVM
+type EVM struct {
+	Context BlockContext
+	TxContext
+	StateDB StateDB
+	depth int
+	chainConfig *params.ChainConfig
+	chainRules params.Rules
+	Config Config
+	interpreter *EVMInterpreter
+	abort atomic.Bool
+	callGasTemp uint64
+	precompiles map[common.Address]PrecompiledContract
+	jumpDests map[common.Hash]bitvec
+}
+
+type EVMInterpreter struct {
+	evm   *EVM
+	table *JumpTable
+
+	hasher    crypto.KeccakState // Keccak256 hasher instance shared across opcodes
+	hasherBuf common.Hash        // Keccak256 hasher result array shared across opcodes
+
+	readOnly   bool   // Whether to throw on stateful modifications
+	returnData []byte // Last CALL's return data for subsequent reuse
+}
+
+type Contract struct {
+	caller  common.Address
+	address common.Address
+
+	jumpdests map[common.Hash]bitvec // Aggregated result of JUMPDEST analysis.
+	analysis  bitvec                 // Locally cached result of JUMPDEST analysis
+
+	Code     []byte
+	CodeHash common.Hash
+	Input    []byte
+
+	IsDeployment bool
+	IsSystemCall bool
+
+	Gas   uint64
+	value *uint256.Int
+}
+```
+
+
+
 <!-- Content_END -->
