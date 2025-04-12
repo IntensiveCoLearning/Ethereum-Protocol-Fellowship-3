@@ -1343,6 +1343,25 @@ click [here](https://consensysdiligence.github.io/smart-contract-best-practices/
 
 [Source](https://consensysdiligence.github.io/smart-contract-best-practices/attacks/)
 
+# 2025.04.12
+
+Ethereum security utilizes several types of bug bounty programs:
+
+1.  **Bug Bounty Platforms**:
+    *   Development teams submit projects to platforms that either manage the program or list it for exposure.
+    *   **Web3 Native Platforms**: Host smart contract and frontend bounties (e.g., Immunefi, HackenProof).
+    *   **Traditional Platforms**: Host mainly frontend bounties for centralized exchanges (e.g., HackerOne, Bugcrowd).
+    *   **Bounty Collaboration Platforms**: Pay developers for new features/contracts (e.g., Gitcoin).
+2.  **Crowd-sourced Security Solutions**:
+    *   Address the high demand for security reviews using "audit contests".
+    *   Freelance researchers compete to find vulnerabilities in a set time frame (e.g., Code4rena).
+3.  **Project Managed Bounties**:
+    *   Managed directly by the project team, often focusing on smart contracts.
+    *   Examples include: Airswap, Ethereum Foundation, Etherscan.io, ImmutableSoft, 0xProject, Parity.
+
+[Source](https://consensysdiligence.github.io/smart-contract-best-practices/bug-bounty-programs/)
+
+
 
 
 <!-- Content_END -->
