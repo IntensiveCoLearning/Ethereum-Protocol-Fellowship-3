@@ -1333,6 +1333,51 @@ type Contract struct {
 }
 ```
 
+### 2025.04.12
+在之前有说到其实以太坊的执行层可以看作是一个交易区块的状态机，那么 EVM 就可以看作是其中的状态转换函数，所以只能由交易来驱动状态的转变，在 core/state_processor.go 中，通过 ApplyTransaction 方法或者 Process 作为入口，让 EVM 开始处理交易，这两个方法是  EVM 的入口：
+![image](https://github.com/user-attachments/assets/5427831b-ed01-4845-a73b-26c4238005ea)
+
+![image](https://github.com/user-attachments/assets/b8e27ed5-b206-41eb-8878-813df5c7b1e5)
+
+ApplyTransaction 和 Process 都可以作为交易的入口，但是适用的场景不一样：
+
+- Process：Process 用于区块导入和验证过程，而且需要准备整个区块的执行的环境，包括 EVM 实例、区块上下文等等，处理执行交易外，还需要处理区块奖励、系统调用等等内容
+- ApplyTransaction：可用于模拟交易执行、测试或交易池验证，在调用  ApplyTransaction 时，需要实例化 EVM，并且准备好交易的上下文，只会执行单个交易，不涉及其他区块级别的操作
+- Process 和 ApplyTransaction 内部都会调用 ApplyTransactionWithEVM 来执行交易
+
+在执行交易之前，需要先初始化执行交易所需要的上下文：
+
+- 区块相关信息：
+    - 区块头信息
+    - 区块 hash
+    - 区块号
+    - gas 池，初始容量为区块的 Gas 上限
+ 
+![image](https://github.com/user-attachments/assets/190a3c29-7e5e-49f0-8c11-fcde51bef8af)
+
+- 验签者：用于验证签名和恢复交易发送者的地址
+![image](https://github.com/user-attachments/assets/da567e1b-7778-4c8f-a2f5-231a332b8b18)
+
+
+- EVM 执行环境
+    - 状态数据库
+    - EVM 实例
+
+![image](https://github.com/user-attachments/assets/6bd92059-d51f-4838-9268-6c71ca09c0f7)
+
+
+- 系统调用
+    - 比如处理信标链根（EIP-4788）
+    - 比如处理父区块哈希（EIP-2935/EIP-7709）
+
+![image](https://github.com/user-attachments/assets/868e6522-0c4d-4c75-affb-610d5a7ab481)
+
+- 交易上下文
+    - 将交易转换为 Msg
+    - 交易上下文
+
+![image](https://github.com/user-attachments/assets/70b90ca9-32e6-47b3-a1d8-e7436c0713d4)
+
 
 
 <!-- Content_END -->
