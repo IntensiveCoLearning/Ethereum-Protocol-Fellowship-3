@@ -1217,5 +1217,90 @@ On Ethereum, EIP-7701 builds upon the design of RIP-7560 to propose a native AA 
 
 By leveraging EOF, users can upgrade their smart EOAs using EIP-7702 to ensure compatibility with EIP-7701, either by migrating to new EOF-based contracts or by updating their proxy contract's implementation address.
 
+# 2025.04.10
+
+## Solidity Documents
+
+```
+// The keyword "public" makes variables 
+// accessible from other contracts 
+address public minter; 
+mapping(address => uint) public balances;
+```
+
+其实以太坊的路线图理解起来很简单，主要是掌握以太坊的核心流程不断往下分解，比如 pk 签名 -》提交 RPC 到网络 -》验证和执行 -》收费和记录 -》共识和同步 -》定下来了。之后的诸多升级就是优化相关速度、gas、丰富的类型等。
+
+Every account has a persistent key-value store mapping 256-bit words to 256-bit words called storage.
+
+TODO 这个 storage 的存储空间有多大？如何计算？
+
+A transaction is a message that is sent from one account to another account (which might be the same or empty, see below). It can include binary data (which is called “payload”) and Ether.
+If the target account contains code, that code is executed and the payload is provided as input data.
+
+If the target account is not set (the transaction does not have a recipient or the recipient is set to null), the transaction creates a new contract.
+
+Storage, Memory and the Stack
+
+Each account has a data area called storage, which is persistent between function calls and transactions. Storage is a key-value store that maps 256-bit words to 256-bit words.
+
+It is not possible to enumerate storage from within a contract, it is comparatively costly to read, and even more to initialise and modify storage.
+
+The second data area is called memory, of which a contract obtains a freshly cleared instance for each message call.
+Memory is linear and can be addressed at byte level, but reads are limited to a width of 256 bits, while writes can be either 8 bits or 256 bits wide.
+
+The EVM is not a register machine but a stack machine, so all computations are performed on a data area called the stack. It has a maximum size of 1024 elements and contains words of 256 bits.
+
+TODO 这里 32 bytes 长度的单词的含义是什么？
+
+Contracts can call other contracts or send Ether to non-contract accounts by the means of message calls. Message calls are similar to transactions, in that they have a source, a target, data payload, Ether, gas and return data.
+
+As already said, the called contract (which can be the same as the caller) will receive a freshly cleared instance of memory and has access to the call payload - which will be provided in a separate area called the calldata.
+
+calldata 是相当于调用合约，传递参数的时候，存储的位置。
+
+After finished execution, it can return data which will be stored at a location in the caller’s memory preallocated by the caller.
+
+Calls are limited to a depth of 1024, which means that for more complex operations, loops should be preferred over recursive calls. Furthermore, only 63/64th of the gas can be forwarded in a message call, which causes a depth limit of a little less than 1000 in practice.
+
+Delegatecall 跟 message call 基本一样，主要区别是目标地址的代码会被放在当前合约地址的 context 下面调用。 这样就是仅仅使用目标地址的 code 来实现功能。这样就有了 library 功能，将库的逻辑应用到 contract 的 storage。
+
+Contracts cannot access log data after it has been created, but they can be efficiently accessed from outside the blockchain. Since some part of the log data is stored in bloom filters, it is possible to search for this data in an efficient and cryptographically secure way, so network peers that do not download the whole blockchain (so-called “light clients”) can still find these logs.
+
+TODO 从 0 设计一个以太坊，通过这个文章，把很多协议相关的东西都搞清楚。
+
+The only way to remove code from the blockchain is when a contract at that address performs the selfdestruct operation. The remaining Ether stored at that address is sent to a designated target and then the storage and code is removed from the state.
+
+From EVM >= Cancun onwards, selfdestruct will only send all Ether in the account to the given recipient and not destroy the contract.
+
+TODO 为什么 selfdestruct 被废掉了？感觉还是比较实用的。
+
+precompiled contracts 是常用高频的 EVM code，为了加速和降低 gas，直接在 EL 内置。
+
+# 2025.04.11
+
+```
+struct Voter { 
+  uint weight; // weight is accumulated by delegation 
+  bool voted; // if true, that person already voted 
+  address delegate; // person delegated to 
+  uint vote; // index of the voted proposal 
+}
+
+constructor(bytes32[] memory proposalNames) { 
+  chairperson = msg.sender; 
+  voters[chairperson].weight = 1;
+```
+
+这一行代码里面，voters 在 store 里面的存储模式和格式是什么？
+
+Voter storage delegate_ = voters[to];
+
+这里的 storage 存储位置是哪里？
+
+# 2025.4.12
+
+## https://hackmd.io/@colinlyguo/SyAZWMmr1x 回顾里面的扩展链接和 demo
+
+
 
 <!-- Content_END -->
