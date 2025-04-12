@@ -1525,6 +1525,48 @@ const createLibp2pNode1 = async () => {
 
 ### 2025.04.12
 #### 33th-EVM ASM
+* **EVM内部字节码概述**
+    * **字节码结构**
+        * 创建字节码 (creation bytecode)：包含合约构造函数逻辑和参数，仅在部署时执行。
+        * 运行时字节码 (runtime bytecode)：部署后存储在链上，用于合约调用执行，不包含构造逻辑。
+        * 元数据 (metadata)：编译器生成的元数据附加在字节码末尾，用于ABI和调试。
+    * **字节码格式**
+        * 由一系列opcode和立即数(PUSH)组成，每个opcode占1字节，PUSH后跟随相应长度的数据。
+        * 采用256位大端栈机模型，使用256位字(word)进行运算。
+* **EVM汇编演变**
+    * **Yellow Paper原始汇编**
+        * 初始定义于Ethereum Yellow Paper，包括基本算术、逻辑、存储和控制流操作。
+    * **独立汇编 (Standalone Assembly)**
+        * Solidity早期版本支持独立assembly文件，可生成EVM字节码。
+    * **Yul中间语言**
+        * 从Solidity 0.5开始引入，作为IR用于优化和inline assembly，支持多后端编译。
+    * **EVM对象格式(EOF)**
+        * EIP-3540引入EOF，将字节码分段并版本化，支持一次性部署时验证，便于EVM升级。
+* **Solidity中使用汇编**
+    * **inline assembly语法**
+        * 使用`assembly { ... }`块，在Solidity函数内部编写Yul代码。
+    * **常用指令示例**
+        * `mload`/`mstore`：内存读写。
+        * `sload`/`sstore`：存储读写。
+        * `let`：定义局部变量。
+    * **示例：retrieve函数**
+        ```solidity
+        function retrieve() public view returns (uint256) {
+            assembly {
+                let v := sload(0)
+                mstore(0x80, v)
+                return(0x80, 32)
+            }
+        }
+        ```
+    * **示例：store函数**
+        ```solidity
+        function store(uint256 newValue) public {
+            assembly {
+                sstore(0, newValue)
+            }
+        }
+        ```
 
 
 
