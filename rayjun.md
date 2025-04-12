@@ -1205,4 +1205,179 @@ Trie 的 Commit 操作是以太坊状态管理中的关键环节，在需要将�
 6. 重置未提交计数器：Commit 完成后，会重置未提交修改的计数器，为下一轮操作做准备
 
 
+### 2025.04.09
+triedb 模块是trie 的持久化层，负责将 trie 的节点数据持久化到数据库中。简单来说，trie 和 triedb 的关系就像内存中的数据结构和磁盘上的存储系统：
+
+- trie 是内存中的数据结构，负责高效的数据操作
+- triedb 是持久化层，负责将 trie 的数据持久化到数据库
+- 两者配合工作，trie 负责计算和操作，triedb 负责存储和检索
+
+在需要处理状态变化的场景，triedb 使用 NodeDatabase 来创建 trie：
+![image](https://github.com/user-attachments/assets/8ac80fe9-1023-4a9f-a42b-dacb4a8b97fb)
+
+trie 在创建时，也需要接收一个 NodeDatabase 参数，使用 triedb 提供的 NodeDatabase 来创建 trie， trie 的所有读写操作都会通过 triedb 来访问实际的存储，当需要提交更改时，通过 triedb 来持久化这些更改：
+![image](https://github.com/user-attachments/assets/d752d66e-26b4-4fd4-bb2c-cd58eac34307)
+
+新建一个 DiffLayer，会在一个已经存在的 layer 上创建一个新的 Layer：
+![image](https://github.com/user-attachments/assets/84f368d6-60e8-4a00-97c9-135a4d0d79e2)
+
+在 triedb 中，使用 layer 的设计来实现不同层级的逻辑，让每层只专注处理当前的层的逻辑，而不需要关心其他层的设计：
+```Go
+type layer interface {
+	
+	node(owner common.Hash, path []byte, depth int) ([]byte, common.Hash, *nodeLoc, error)
+	account(hash common.Hash, depth int) ([]byte, error)
+	storage(accountHash, storageHash common.Hash, depth int) ([]byte, error)
+	rootHash() common.Hash
+	stateID() uint64
+	parentLayer() layer
+	update(root common.Hash, id uint64, block uint64, nodes *nodeSet, states *StateSetWithOrigin) *diffLayer
+	journal(w io.Writer) error
+} 
+```
+
+在 triedb 中有 diffLayer 和 diskLayer 实现了 layer 接口。layer 的设计很有意思，通过层级来表示存储版本，difflayer 用来临时存储状态变更，可以同时存在多个 difflayer，disklayer 作为持久化层，负责数据的最终持久化，在一个 triedb 的实例中，只能有一个 disklayer 存在：
+
+- 从上到下：diffLayer -> diffLayer -> ... -> diskLayer
+- diffLayer 只存储与父层的差异
+- 每个层都有唯一的 root 和 id
+- 层间通过 parent 指针连接
+- diffLayer -> diskLayer: 通过 persist() 递归合并
+
+
+### 2025.04.10
+ethdb 是对数据库层的抽象，比如当前主流的数据库使 leveldb，ethdb 对向 triedb 提供向数据库进行 kv 读写的接口。 
+
+1. ethdb 是底层的通用键值对存储，提供基础的存储能力
+2. triedb 是基于 ethdb 的高级状态存储系统，专门用于管理 Ethereum 的状态树
+3. triedb 通过 disklayer 与 ethdb 交互，将状态数据持久化到 ethdb
+4. ethdb 为 triedb 提供了性能优化的基础，而 triedb 在此基础上实现了更高级的状态管理功能
+
+ethdb 提供了四个主要的接口：
+```Go
+type KeyValueReader interface {
+	Has(key []byte) (bool, error)
+	Get(key []byte) ([]byte, error)
+}
+
+type KeyValueWriter interface {
+	Put(key []byte, value []byte) error
+	Delete(key []byte) error
+}
+
+type KeyValueRangeDeleter interface {
+	DeleteRange(start, end []byte) error
+}
+
+type KeyValueStater interface {
+	Stat() (string, error)
+}
+```
+其他更复杂的功能也是由这几个接口来组合完成，这也是 Go 语言中常用的方式。此外，在 core/rawdb 中的实现在以太坊的协议中实现一些数据的操作，这些是逻辑层的业务，也是通过调用 ethdb 的能力来完成。
+
+
+### 2025.04.11
+EVM 是以太坊的核心组件，在 `core/vm` 中实现，EVM 是一个基于栈的虚拟机，负责执行智能合约代码，提供的核心功能包括：
+
+- 提供EVM执行环境
+- 实现所有EVM操作码(opcodes)
+- 处理合约调用和创建
+- 管理合约执行的状态和上下文
+- 实现gas计算和消耗机制
+
+EVM 的实现有三个主要的组件， EVM 结构体定义了 EVM 的总体结构及依赖，包括执行上下文，状态数据库依赖等等，EVMInterpreter 结构体定义了解释器的实现，负责执行 EVM 字节码，Contract 结构体封装合约调用的具体参数，包括调用者、合约代码、输入等等，并且在 opcodes.go 中定义了当前所有的操作码：
+```Go
+// EVM
+type EVM struct {
+	Context BlockContext
+	TxContext
+	StateDB StateDB
+	depth int
+	chainConfig *params.ChainConfig
+	chainRules params.Rules
+	Config Config
+	interpreter *EVMInterpreter
+	abort atomic.Bool
+	callGasTemp uint64
+	precompiles map[common.Address]PrecompiledContract
+	jumpDests map[common.Hash]bitvec
+}
+
+type EVMInterpreter struct {
+	evm   *EVM
+	table *JumpTable
+
+	hasher    crypto.KeccakState // Keccak256 hasher instance shared across opcodes
+	hasherBuf common.Hash        // Keccak256 hasher result array shared across opcodes
+
+	readOnly   bool   // Whether to throw on stateful modifications
+	returnData []byte // Last CALL's return data for subsequent reuse
+}
+
+type Contract struct {
+	caller  common.Address
+	address common.Address
+
+	jumpdests map[common.Hash]bitvec // Aggregated result of JUMPDEST analysis.
+	analysis  bitvec                 // Locally cached result of JUMPDEST analysis
+
+	Code     []byte
+	CodeHash common.Hash
+	Input    []byte
+
+	IsDeployment bool
+	IsSystemCall bool
+
+	Gas   uint64
+	value *uint256.Int
+}
+```
+
+### 2025.04.12
+在之前有说到其实以太坊的执行层可以看作是一个交易区块的状态机，那么 EVM 就可以看作是其中的状态转换函数，所以只能由交易来驱动状态的转变，在 core/state_processor.go 中，通过 ApplyTransaction 方法或者 Process 作为入口，让 EVM 开始处理交易，这两个方法是  EVM 的入口：
+![image](https://github.com/user-attachments/assets/5427831b-ed01-4845-a73b-26c4238005ea)
+
+![image](https://github.com/user-attachments/assets/b8e27ed5-b206-41eb-8878-813df5c7b1e5)
+
+ApplyTransaction 和 Process 都可以作为交易的入口，但是适用的场景不一样：
+
+- Process：Process 用于区块导入和验证过程，而且需要准备整个区块的执行的环境，包括 EVM 实例、区块上下文等等，处理执行交易外，还需要处理区块奖励、系统调用等等内容
+- ApplyTransaction：可用于模拟交易执行、测试或交易池验证，在调用  ApplyTransaction 时，需要实例化 EVM，并且准备好交易的上下文，只会执行单个交易，不涉及其他区块级别的操作
+- Process 和 ApplyTransaction 内部都会调用 ApplyTransactionWithEVM 来执行交易
+
+在执行交易之前，需要先初始化执行交易所需要的上下文：
+
+- 区块相关信息：
+    - 区块头信息
+    - 区块 hash
+    - 区块号
+    - gas 池，初始容量为区块的 Gas 上限
+ 
+![image](https://github.com/user-attachments/assets/190a3c29-7e5e-49f0-8c11-fcde51bef8af)
+
+- 验签者：用于验证签名和恢复交易发送者的地址
+![image](https://github.com/user-attachments/assets/da567e1b-7778-4c8f-a2f5-231a332b8b18)
+
+
+- EVM 执行环境
+    - 状态数据库
+    - EVM 实例
+
+![image](https://github.com/user-attachments/assets/6bd92059-d51f-4838-9268-6c71ca09c0f7)
+
+
+- 系统调用
+    - 比如处理信标链根（EIP-4788）
+    - 比如处理父区块哈希（EIP-2935/EIP-7709）
+
+![image](https://github.com/user-attachments/assets/868e6522-0c4d-4c75-affb-610d5a7ab481)
+
+- 交易上下文
+    - 将交易转换为 Msg
+    - 交易上下文
+
+![image](https://github.com/user-attachments/assets/70b90ca9-32e6-47b3-a1d8-e7436c0713d4)
+
+
+
 <!-- Content_END -->

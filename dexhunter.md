@@ -1261,5 +1261,88 @@ TODO: Read specific cases and note down
 -> Tokens might stuck at smart contract like in EOS case
 
 
+# 2025.04.09
+
+## Documentation for security
+
+### Specification 
+
+* Specs, diagrams, state machines, models, and other documentation that helps auditors, reviewers, and the community understand what the system is intended to do.
+* Many bugs can be found just from the specifications, and they are the least costly to fix.
+* Rollout plans that include details listed here, and target dates.
+
+### Status
+
+* Where current code is deployed
+* Compiler version, flags used, and steps for verifying the deployed bytecode matches the source code
+* Compiler versions and flags that will be used for the different phases of rollout.
+* Current status of deployed code (including outstanding issues, performance stats, etc.)
+
+
+### Procedures
+
+* Action plan in case a bug is discovered (e.g., emergency options, public notification process, etc.)
+* Wind down process if something goes wrong (e.g., funders will get percentage of your balance before attack, from remaining funds)
+* Responsible disclosure policy (e.g., where to report bugs found, the rules of any bug bounty program)
+* Recourse in case of failure (e.g., insurance, penalty fund, no recourse)
+
+
+### Known Issues
+
+* Key risks with contract
+e.g., You can lose all your money, hacker can vote for certain outcomes
+* All known bugs/limitations
+* Potential attacks and mitigants
+* Potential conflicts of interest (e.g., will be using yourself, like Slock.it did with the DAO)
+
+### History
+
+* Testing (including usage stats, discovered bugs, length of testing)
+* People who have reviewed code (and their key feedback)
+
+### Contact
+
+* Who to contact with issues
+* Names of programmers and/or other important parties
+* Chat room where questions can be asked
+
+# 2025.04.10
+
+
+## Security Tools
+
+* Visualization
+* Static and Dynamic Analysis
+* Classification
+* Testing
+* Linters and Formatters
+
+## Bug Bounty Programs
+
+refer [here](https://consensysdiligence.github.io/smart-contract-best-practices/bug-bounty-programs/) for details
+
+## Attack References
+
+click [here](https://consensysdiligence.github.io/smart-contract-best-practices/attacks/)
+
+
+# 2025.04.11
+
+## Attacks
+
+*   **Reentrancy**: Intra- and inter-function reentrancy attacks and potentially faulty solutions to them.
+*   **Oracle Manipulation**: Manipulation of external data providers and potential solutions to oracle security issues.
+*   **Frontrunning**: A definition and taxonomy around frontrunning and related attacks.
+*   **Timestamp Dependence**: Attacks relating to the timing of a transaction.
+*   **Insecure Arithmetic**: Integer overflows and underflows.
+*   **Denial of Service**: Denial of service attacks through unexpected reverts and the block gas limit.
+*   **Griefing**: Attacks relating to bad faith players around a smart contract system.
+*   **Force Feeding**: Forcing Ether to be sent to smart contracts to manipulate balance checks.
+*   **Deprecated/Historical**: Attacks that are part of Ethereum's history and vulnerabilities that have been fixed on a (Solidity) compiler level.
+*   **More**: Where to find more information about vulnerabilities and weaknesses.
+
+[Source](https://consensysdiligence.github.io/smart-contract-best-practices/attacks/)
+
+
 
 <!-- Content_END -->
