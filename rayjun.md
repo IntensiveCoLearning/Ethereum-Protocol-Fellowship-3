@@ -1378,6 +1378,41 @@ ApplyTransaction 和 Process 都可以作为交易的入口，但是适用的场
 
 ![image](https://github.com/user-attachments/assets/70b90ca9-32e6-47b3-a1d8-e7436c0713d4)
 
+### 2025.04.13
+在交易执行完成之后，还需要做一些后续的操作，包括，这些需要在Petrca 升级之后才会启用：
+- 处理提款请求 ( requests )
+
+![image](https://github.com/user-attachments/assets/30cf8314-0a7e-4f75-a39c-789c0ab57911)
+
+在以太坊协议中，"系统调用"指的是以太坊协议中特定的预编译合约调用或特殊操作，这些操作由系统账户（而非普通用户）发起，用于实现特定的协议功能。
+
+常见的几个系统调用：
+
+- 信标链根处理 (EIP-4788)：ProcessBeaconBlockRoot 函数实现了EIP-4788，它将信标链区块根写入到一个特殊的预编译合约中。这使得以太坊执行层可以访问共识层（信标链）的信息
+- 父区块哈希处理 (EIP-2935/7709)：ProcessParentBlockHash 函数实现了EIP-2935/7709，它将父区块哈希存储在历史存储合约中，使智能合约能够访问历史区块哈希
+- 提款队列处理 (EIP-7002)：ProcessWithdrawalQueue 函数处理EIP-7002中定义的提款队列，用于处理从共识层到执行层的提款请求
+- 合并队列处理 (EIP-7251)：ProcessConsolidationQueue 函数处理EIP-7251中定义的合并队列
+
+系统调用和普通交易不一样：
+
+- 它们由系统账户（ params.SystemAddress ）发起，而非普通用户
+- 它们不消耗实际的gas（使用固定的大量gas限制，如30,000,000）
+- 它们调用特定的预编译合约地址
+- 它们在区块处理的特定阶段执行，而不是作为普通交易
+
+退款完整流程：
+
+- 共识层（信标链）决定哪些验证者可以提款，并生成提款列表
+- 这些提款被包含在区块的提款字段中
+- 执行层在处理区块时，首先应用这些提款（增加接收者账户余额）
+- 然后执行区块中的交易
+- 最后处理提款队列，为下一个区块准备新的提款请求
+
+在 process 一个区块的时候，会处理这个区块的中的退款，直接在用户的余额中增加：
+![image](https://github.com/user-attachments/assets/c2dee03e-de3f-417d-8337-1fd0ab4ff9ee)
+
+![image](https://github.com/user-attachments/assets/1cc6cd45-43f6-44b7-bad5-bf882adef915)
+
 
 
 <!-- Content_END -->
