@@ -1361,7 +1361,86 @@ Ethereum security utilizes several types of bug bounty programs:
 
 [Source](https://consensysdiligence.github.io/smart-contract-best-practices/bug-bounty-programs/)
 
+# 2025.04.13
+
+Summaries based on [ConsenSys Smart Contract Best Practices](https://consensysdiligence.github.io/smart-contract-best-practices/)
+
+*   **`assert()`, `require()`, `revert()`**:
+    *   `require(condition, "Error message")`: Validates inputs, conditions, and external call return values. Reverts if `condition` is false. Refunds remaining gas. Use for checking prerequisites.
+    *   `assert(condition)`: Checks for internal errors or invariant violations (e.g., state corruption). Reverts if `condition` is false. Consumes all gas (historically). Use for checking things that should never be false if the code is correct.
+    *   `revert("Error message")`: Unconditionally reverts execution. Refunds remaining gas. Useful for complex logic where `require` isn't suitable.
+    *   [Source](https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/assert-require-revert/)
+*   **Modifiers as Guards**:
+    *   Use modifiers primarily for simple, repeated checks like `onlyOwner` or `nonReentrant`.
+    *   Avoid state changes, complex logic, or external calls within modifiers, as they execute before the function body and can obscure risks (like reentrancy) or violate the Checks-Effects-Interactions pattern.
+    *   Prefer `require` statements within the function body for most condition checks.
+    *   [Source](https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/modifiers-as-guards/)
+*   **Integer Division**:
+    *   Solidity versions `0.8.0` and later revert on division or modulo by zero.
+    *   Integer division truncates (rounds down towards zero). Be aware of potential precision loss, especially when order of operations matters (e.g., perform multiplication before division if possible).
+    *   Use safe math libraries (like OpenZeppelin's `SafeMath`) for versions prior to `0.8.0` to prevent overflows/underflows, although `0.8.0+` has built-in checks.
+    *   [Relevant Source (Division by Zero)](https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/deprecated/division-by-zero/)
+*   **Abstract vs Interfaces**:
+    *   **Interfaces**: Define a contract's public API (function signatures) without implementation or state variables. Cannot be instantiated directly. Used for type checking and ensuring contracts adhere to a standard.
+    *   **Abstract Contracts**: Can contain both implemented and unimplemented functions (marked `virtual`). Can have state variables and constructors. Cannot be instantiated if they have unimplemented functions. Used as base contracts for inheritance.
+    *   [Source](https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/abstract-vs-interfaces/)
+*   **Fallback Functions**:
+    *   `receive() external payable`: Executed on plain Ether transfers (no data). Must be marked `payable`.
+    *   `fallback() external [payable]`: Executed when a function call matches no existing function signature, or if Ether is sent with data to a contract without a `receive()` function. Can optionally be `payable`.
+    *   Keep fallback/receive functions simple and low-gas, primarily for logging events or basic actions. Complex logic can lead to gas issues.
+    *   [Source](https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/fallback-functions/)
+*   **Payability**:
+    *   Functions receiving Ether must be marked `payable`. This includes `receive()`, potentially `fallback()`, regular functions, and constructors.
+    *   Non-payable functions will revert if sent Ether.
+    *   Be explicit about which functions should accept Ether.
+    *   [Source](https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/payability/)
+*   **Visibility**:
+    *   `public`: Callable internally and externally. Creates a getter for state variables.
+    *   `external`: Only callable externally (e.g., via transactions or other contracts). More gas-efficient for external calls on large data arguments. Cannot be called internally directly (use `this.func()`).
+    *   `internal`: Callable only internally (within the contract) and by derived contracts.
+    *   `private`: Callable only internally within the defining contract (not by derived contracts).
+    *   Always specify visibility explicitly. Defaulting is deprecated. Use the most restrictive visibility possible.
+    *   [Source](https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/visibility/)
+*   **Locking Pragmas**:
+    *   Use specific compiler versions (`pragma solidity 0.8.20;`) instead of floating versions (`pragma solidity ^0.8.0;`).
+    *   This prevents contracts from being deployed with newer compiler versions that might contain undiscovered bugs or introduce breaking changes.
+    *   [Source](https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/locking-pragmas/)
+*   **Event Monitoring**:
+    *   Emit events for significant state changes or actions.
+    *   Off-chain applications can listen for these events efficiently without needing to query contract state constantly.
+    *   Use `indexed` arguments for filtering events off-chain.
+    *   Events are cheaper than storing data.
+    *   [Source](https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/event-monitoring/)
+*   **Shadowing**:
+    *   Avoid naming local variables, function parameters, or state variables the same as state variables in parent contracts or global variables (`block`, `msg`, etc.).
+    *   Shadowing can lead to confusion and bugs where the wrong variable is accessed. Compilers issue warnings for this.
+    *   [Source](https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/shadowing/)
+*   **`tx.origin`**:
+    *   **Never use `tx.origin` for authorization.** It refers to the original EOA that started the call chain, not the immediate caller (`msg.sender`).
+    *   A contract can be vulnerable to phishing-like attacks where a user is tricked into calling a malicious contract, which then calls the target contract using the user's `tx.origin` for authorization.
+    *   Always use `msg.sender` to identify the immediate caller for authorization checks.
+    *   [Source](https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/tx-origin/)
+*   **Timestamp Dependence**:
+    *   `block.timestamp` (and `now`) can be manipulated by miners within a small range (usually ~15 seconds, but theoretically longer).
+    *   Do not rely on timestamps for critical logic, randomness, or precise time-based triggers.
+    *   Use `block.number` for ordering or logic dependent on progression, or oracles for reliable time data.
+    *   [Source](https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/timestamp-dependence/)
+*   **Complex Inheritance**:
+    *   Keep inheritance graphs simple and understandable. Deep or wide inheritance (especially multiple inheritance) increases complexity and potential for errors (e.g., C3 linearization conflicts, shadowed variables).
+    *   Favor composition (using other contracts via interfaces) over deep inheritance.
+    *   [Source](https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/complex-inheritance/)
+*   **Interface Types**:
+    *   Use interface types (`IMyContract(address)`) when calling other contracts instead of raw address calls (`address.call()`).
+    *   Interfaces provide type safety and ensure the target contract implements the expected functions.
+    *   Raw calls bypass type checks and can be dangerous if not handled carefully (especially with `delegatecall`).
+    *   [Source](https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/interface-types/)
+*   **`EXTCODESIZE` Checks**:
+    *   Checking `address.code.length > 0` (or the `extcodesize` opcode) is used to determine if an address is a contract.
+    *   **Warning**: This check can return `0` for a contract address *during its construction* (before the runtime code is deployed).
+    *   Avoid using `extcodesize` checks as the sole method for preventing EOAs from calling a function, as contracts under construction can bypass it.
+    *   [Source](https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/extcodesize-checks/)
 
 
+<!-- # 2025.04.14 -->
 
 <!-- Content_END -->
