@@ -1568,6 +1568,103 @@ const createLibp2pNode1 = async () => {
         }
         ```
 
+### 2025.04.13
+#### 34th-EVM EIP
+* **Homestead (2016)**
+  * EIP-2: Homestead Hard-fork Changes – core protocol和gas调整
+  * EIP-7: DELEGATECALL opcode – 引入DELEGATECALL，用于在被调用合约上下文中执行调用
+  * EIP-8: devp2p Forward Compatibility – 网络层前向兼容性要求
+  * 给Solidity带来变化:
+    * `address.delegatecall` 在Yul/inline assembly中支持，方便实现代理合约逻辑
+    * 无需变更语言层级，但优化了ABI编码和gas估算
+
+* **Tangerine Whistle & Spurious Dragon (2016)**
+  * EIP-150: Gas cost changes for IO-heavy operations – 调整IO密集型操作gas成本
+  * EIP-160: EXP cost increase – 增加EXP操作gas成本
+  * EIP-161: State trie clearing – 清理空账户以释放状态树空间
+  * EIP-170: Contract code size limit – 合约字节码大小上限24KB
+  * 给Solidity带来变化:
+    * `gasleft()` 全局函数用于获取剩余gas，替代旧的 `msg.gas`
+    * 优化合约部署代码结构以符合字节码大小限制
+
+* **Byzantium (2017)**
+  * EIP-100: Difficulty adjustment including uncles
+  * EIP-140: REVERT opcode – 支持带错误消息的回滚
+  * EIP-196 & EIP-197: alt_bn128 precompiles – 椭圆曲线加密原语
+  * EIP-198: Big integer modular exponentiation precompile
+  * EIP-211: RETURNDATASIZE & RETURNDATACOPY opcodes – 访问返回数据
+  * EIP-214: STATICCALL opcode – 无状态调用
+  * 给Solidity带来变化:
+    * 引入 `require` 和 `revert` 语句，支持错误消息字符串
+    * 支持 `try/catch` 及 `RETURNDATASIZE`/`RETURNDATACOPY` 用于动态返回数据处理
+    * `staticcall` 在 `view`/`pure` 函数中自动使用，无需手动assembly
+
+* **Constantinople & St. Petersburg (2019)**
+  * EIP-145: Bitwise shifting (`SHL`, `SHR`, `SAR`)
+  * EIP-1014: CREATE2 opcode – 带salt的合约创建
+  * EIP-1052: EXTCODEHASH opcode – 获取合约字节码哈希
+  * EIP-1234: Difficulty bomb delay & block reward reduction
+  * EIP-1283: Net gas metering for SSTORE (later replaced by EIP-2200)
+  * 给Solidity带来变化:
+    * 添加位移操作符 `<<`, `>>`，Solidity 0.5.0开始原生支持
+    * 支持 `new Contract{salt: bytes32 _salt}()` 语法用于CREATE2
+    * 引入 `address.codehash` 属性获取代码哈希
+
+* **Istanbul (2019)**
+  * EIP-152: BLAKE2 F precompile
+  * EIP-1108: alt_bn128 precompile gas cost reduction
+  * EIP-1344: CHAINID opcode
+  * EIP-1884: Reprice trie-size-dependent opcodes
+  * EIP-2028: Calldata gas cost reduction
+  * EIP-2200: Rebalance net-metered SSTORE gas cost
+  * 给Solidity带来变化:
+    * 全局变量 `block.chainid` 可直接访问链ID
+    * 支持 ZK 相关预编译函数 `pairing` 等 via 内置库
+    * `calldata` 参数成本下降，鼓励使用 `calldata` 修饰节省gas
+
+* **Muir Glacier (2020)**
+  * EIP-2384: Difficulty bomb delay
+  * 给Solidity带来变化:
+    * 无直接语言层改动，仅影响网络难度调整
+
+* **Berlin (2021)**
+  * EIP-2565: Modexp gas cost reduction
+  * EIP-2929: Gas cost increase for cold access
+  * EIP-2718: Typed transaction envelope
+  * EIP-2930: Access list transaction
+  * 给Solidity带来变化:
+    * `AccessList` 交易类型支持需工具链升级后生效
+    * 更新 `sload`/`sstore` gas 估算，影响合约调用成本
+
+* **London (2021)**
+  * EIP-1559: Fee market change (base fee & tip)
+  * EIP-3198: BASEFEE opcode
+  * EIP-3529: Refund reduction
+  * 给Solidity带来变化:
+    * 全局变量 `block.basefee` 可访问当前区块基础费
+    * 建议使用 `tx.gasprice`, `tx.maxFeePerGas`, `tx.maxPriorityFeePerGas` 管理费用
+
+* **Shanghai (2023)**
+  * EIP-3651: Warm coinbase
+  * EIP-3855: PUSH0 opcode
+  * EIP-3860: Initcode size limit
+  * EIP-4895: Beacon chain withdrawals
+  * 给Solidity带来变化:
+    * `PUSH0` 使Yul中可生成更紧凑字节码
+    * 对初始化代码长度警告，Solidity v0.8+ 增加编译时检查
+
+* **Dencun / Cancun (2024)**
+  * EIP-5656: MCOPY opcode – 高效内存复制
+  * EIP-6780: SELFDESTRUCT only in same transaction
+  * EIP-1153: Transient storage opcodes – TLOAD & TSTORE
+  * EIP-4788: Beacon block roots contract
+  * EIP-4844: Blob-carrying transactions
+  * 给Solidity带来变化:
+    * 在Yul中支持 `mcopy(dst, src, length)` 操作
+    * `selfdestruct` 行为限制，建议使用更安全的清理模式
+    * TSTORE/TLOAD 暂无原生支持，未来Solidity或扩展Yul
+    * Blob交易类型不影响Solidity语法，但影响L2 Rollup数据可用性
+
 
 
 
