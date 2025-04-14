@@ -1665,11 +1665,37 @@ const createLibp2pNode1 = async () => {
     * TSTORE/TLOAD 暂无原生支持，未来Solidity或扩展Yul
     * Blob交易类型不影响Solidity语法，但影响L2 Rollup数据可用性
 
+### 2025.04.14
+#### 35th-L2 EIP
+* **交易类型与访问优化 Transaction Formats & Access Optimization**
+    * **EIP-2718: Typed Transaction Envelope** – 定义了一个新的交易类型“信封”，为未来事务类型（如访问列表和 EIP-1559 风格交易）提供扩展机制，奠定了 L2 特定交易格式的基础
+    * **EIP-2930: Access Lists** – 为交易添加 accessList 字段，预声明的状态访问将以折扣气费执行，减少了 rollup 批量交易的成本
 
+* **数据与状态访问优化 Data & State Access Optimization**
+    * **EIP-2028: Calldata Gas Cost Reduction** – 将 Calldata 非零字节的气费从 68 降至 16，显著降低了 calldata 密集型 rollup 数据提交成本
+    * **EIP-7623: Increase Calldata Cost** – 针对主要用于数据可用性的交易提高 calldata 气费（10/40），以减少最大区块大小波动，为增加 blob 容量腾出空间
 
+* **加密预编译合约支持 ZK Cryptographic Precompiles for ZK**
+    * **EIP-196: alt_bn128 Precompiles** – 添加椭圆曲线 alt_bn128 点加和标量乘法预编译合约，支持 zkSNARK 验证
+    * **EIP-197: Pairing Check Precompile** – 添加针对 alt_bn128 曲线的双线性配对检查预编译合约，用于 zkSNARK 验证
+    * **EIP-1108: Reduce alt_bn128 Precompile Gas Costs** – 降低 alt_bn128 预编译合约的气费，促进批量 zk-SNARK 验证和更广泛的私密协议部署
+    * **EIP-2537: BLS12-381 Precompiles** – 引入 BLS12-381 曲线操作预编译合约，实现聚合签名验证，优化 L2 验证流程
 
+* **数据可用性增强 Data Availability Enhancements**
+    * **EIP-4844: Proto-Danksharding (Blobs)** – 引入临时“blob”交易类型，将 rollup 数据以短期存储形式提交，大幅降低 L2 数据发布成本
+    * **EIP-7691: Blob Throughput Increase** – 将区块中 blob 的目标和最大数量从 3/6 提升至 6/9，提高 L2 数据可用性吞吐量
+    * **EIP-7742: Dynamic Blob Parameters** – 使共识层和执行层能够动态设置 blob 目标和最大值，简化未来 blob 参数调整，无需硬分叉
 
+* **账户灵活性与抽象 Account Flexibility & Abstraction**
+    * **EIP-1014: CREATE2** – 引入 CREATE2 操作码，支持合同地址的可预测部署，便于状态通道和 counterfactual 合约部署
+    * **EIP-3074: AUTH & AUTHCALL** – 增加 AUTH 和 AUTHCALL 操作码，允许 EOA 授权智能合约代表其发起交易，推进执行层抽象
+    * **EIP-7702: Set Code Transaction** – 定义新的 SET_CODE_TX_TYPE 交易类型，EOA 可指定委托代码，实现原生账户抽象与可组合性
 
+* **审查抵抗与交易包容性 Censorship Resistance & Inclusion**
+    * **EIP-7547: Inclusion Lists** – 提供“包含列表”机制，强制指定交易必须包含在区块中，提升 MEV-Boost 环境下的审查抵抗能力
+
+* **存储气费计量 Storage Gas Metering**
+    * **EIP-2200: Net Gas Metering for SSTORE** – 重新定义 SSTORE 的净气费计量，优化存储写入成本，为 rollup 状态更新提供更合理的气费模型
 
 
 
