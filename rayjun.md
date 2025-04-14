@@ -1414,5 +1414,32 @@ ApplyTransaction 和 Process 都可以作为交易的入口，但是适用的场
 ![image](https://github.com/user-attachments/assets/1cc6cd45-43f6-44b7-bad5-bf882adef915)
 
 
+### 2025.04.14
+在准备好上下文之后，EVM 就需要开始准备执行合约的字节码了，在实例化 EVM 时，需要根据当前的以太坊协议版本来初始化字节码解释器的版本：
+![image](https://github.com/user-attachments/assets/8ca969f5-794b-483b-a628-51e2428d5a27)
+
+比如在最新的 Pectra 升级中，就新增加了 EIP7702 的字节码：
+![image](https://github.com/user-attachments/assets/d62b2242-9764-4db1-8abe-a7e379a43fc7)
+
+在调用合约时需要先加载合约：
+![image](https://github.com/user-attachments/assets/bbe79e10-d90b-4d49-93c8-227c07bf4bc3)
+
+合约加载完成之后，就会开始在解释器中执行，执行的过程在一个 for 循环中展开，合约字节码执行的流程如下：
+
+- 获取指令
+- 检查指令操作是否有效
+- 检查是否超过了栈的最大深度
+- 计算指令需要消耗的 gas，并计入当前的 gas 消耗量
+- 执行指令
+
+![image](https://github.com/user-attachments/assets/4651b432-e561-4671-bc6b-87655862d368)
+
+execute 就是执行具体指令的逻辑，具体的指令都在 core/vm/instructions.go 中实现：
+![image](https://github.com/user-attachments/assets/9599187c-a8d3-4410-bbb5-eb66c812c180)
+
+![image](https://github.com/user-attachments/assets/b2cfe762-6d89-4c3d-88ed-3e01e27b7b67)
+
+
+
 
 <!-- Content_END -->
