@@ -1697,6 +1697,39 @@ const createLibp2pNode1 = async () => {
 * **存储气费计量 Storage Gas Metering**
     * **EIP-2200: Net Gas Metering for SSTORE** – 重新定义 SSTORE 的净气费计量，优化存储写入成本，为 rollup 状态更新提供更合理的气费模型
 
+### 2025.04.15
+#### 36th-DEFI&EIP
+* **DeFi 概述**  
+    * DeFi 是一系列在以太坊上运行的、无需许可的金融产品和服务，任何拥有互联网连接的人都可参与，无需中心化中介，所有合约代码公开可审计，具有组合性与透明性。  
+    * DeFi 架构通常分层：  
+        * **基础层**：以太坊区块链，提供去中心化账本与执行环境。  
+        * **协议层**：各类通用金融协议（如交易、借贷、衍生品）。  
+        * **应用层**：基于协议构建的前端或聚合器，面向最终用户。  
+
+* **去中心化交易所**  
+    * **自动做市商 (AMM)**  
+        * **恒定乘积模型 (x × y = k)**：Uniswap V2 中，每个交易对的两个资产储备量满足 x·y=k，当有交易时按此公式自动调整价格，无需订单簿。  
+        * **集中流动性 (Concentrated Liquidity)**：Uniswap V3 允许做市商在自定义价格区间内提供流动性，分段常数乘积曲线提高资本效率。  
+    * **订单簿模型**  
+        * **离线订单簿，链上结算**：如 0x 协议，订单（Limit/RFQ/NFT）在链下生成、签名与传播，撮合后将订单与签名提交链上智能合约结算，实现 Maker/Taker 模式，降低 gas 成本。  
+        * **撮合机制**：Maker 创建包含交易细节的 JSON 订单并签名，Taker 提交填单交易后，智能合约验证签名并原子交换资产。  
+
+* **去中心化借贷**  
+    * **Compound 协议**  
+        * **利率模型**：基于资产利用率（utilization rate = 借出量/供应量），当利用率低于 kink 时按线性公式计算利率，超过 kink 时陡增，以平衡供需。  
+        * **利息计算**：每秒按区块时间戳计提利息，APY 通过 (1 + ratePerBlock)^(blocksPerYear) – 1 计算，示例：blocksPerYear≈5×60×24×365。  
+    * **Aave 协议**  
+        * **双斜率利率模型**：定义 optimal usage ratio，低于该值时按较低斜率增长，超过后按更高斜率增长；支持稳定利率与浮动利率两种模式。  
+        * **可选利率模式**：借款人可在稳定利率与浮动利率间切换，智能合约自动处理利率转换与清算。  
+
+* **以太坊支持与 EIP 标准**  
+    * **ERC‑20 (EIP‑20)**：定义代币基本接口（totalSupply、balanceOf、transfer、approve、transferFrom、allowance），确保跨协议互操作性。  
+    * **Permit (EIP‑2612)**：扩展 ERC‑20，增加 permit 函数，允许用户通过 EIP‑712 签名离链批准，无需额外 on‑chain approve 交易，实现 gasless approvals。  
+    * **Typed Data 签名 (EIP‑712)**：规范结构化数据签名格式，为 Permit、meta‑transactions 等场景提供安全高效的离链签名方案。  
+    * **接口检测 (EIP‑165)**：定义 supportsInterface(bytes4) 方法，标准化合约发布与检测所实现的接口，便于协议间功能兼容与自动化集成。  
+    * **费率市场 (EIP‑1559)**：引入可变 Base Fee（按区块大小动态调整并烧毁）与 Priority Fee（小费），取代一价拍卖，提高交易费预测性并减少过度竞价。  
+
+
 
 
 <!-- Content_END -->
