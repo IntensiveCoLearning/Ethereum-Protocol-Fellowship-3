@@ -1454,5 +1454,50 @@ execute 就是执行具体指令的逻辑，具体的指令都在 core/vm/instru
 - RPC 服务：为用户提供访问节点的能力，比如用户向节点发送交易
 
 
+### 2024.04.16
+在 eth/backend.go 中的 Ethereum 结构是整个以太坊协议的抽象，上面说到的6 个组件都可以在这个结构中找到对应的定义：
+```Go
+type Ethereum struct {
+	config         *ethconfig.Config
+	// 交易池
+	txPool         *txpool.TxPool
+	localTxTracker *locals.TxTracker
+	// 区块链结构
+	blockchain     *core.BlockChain
+
+  // 是 P2P 网络数据同步的核心实例
+	handler *handler
+	discmix *enode.FairMix
+	dropper *dropper
+
+	// 状态数据库
+	chainDb ethdb.Database // Block chain database
+
+	eventMux       *event.TypeMux
+	// Engine API
+	engine         consensus.Engine
+	accountManager *accounts.Manager
+
+	filterMaps      *filtermaps.FilterMaps
+	closeFilterMaps chan chan struct{}
+
+  // 对外的 RPC 服务
+	APIBackend *EthAPIBackend
+
+	miner    *miner.Miner
+	gasPrice *big.Int
+
+	networkID     uint64
+	netRPCService *ethapi.NetAPI
+
+  // P2P 服务
+	p2pServer *p2p.Server
+
+	lock sync.RWMutex 
+	shutdownTracker *shutdowncheck.ShutdownTracker 
+}
+```
+
+
 
 <!-- Content_END -->
