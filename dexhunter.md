@@ -1441,6 +1441,16 @@ Summaries based on [ConsenSys Smart Contract Best Practices](https://consensysdi
     *   [Source](https://consensysdiligence.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/extcodesize-checks/)
 
 
-<!-- # 2025.04.14 -->
+# 2025.04.15
+
+core eip
+
+[link](https://eips.ethereum.org/core)
+
+eip-2 Homestead Hard-fork Changes
+
+will need more time to study a bunch of eips
+
+
 
 <!-- Content_END -->
