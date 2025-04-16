@@ -1452,5 +1452,15 @@ eip-2 Homestead Hard-fork Changes
 will need more time to study a bunch of eips
 
 
+# 2025.04.16
+
+study group lecture [21](https://epf.wiki/#/eps/day21?id=study-group-lecture-21-engine-api)
+
+[engine api](https://hackmd.io/@danielrachi/engine_api)
+
+The Engine API is the interface that allows communication between the execution and the consensus layer of an Ethereum node. Since the merge, this API has become a vital piece of Ethereum's architecture. It coordinates important tasks such as block validation and block proposal.
+
+more on [github](https://github.com/ethereum/execution-apis/blob/main/src/engine/shanghai.md) about shanghai specs
+
 
 <!-- Content_END -->
