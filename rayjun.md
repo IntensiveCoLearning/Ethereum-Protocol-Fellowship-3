@@ -1445,55 +1445,65 @@ execute 就是执行具体指令的逻辑，具体的指令都在 core/vm/instru
 
 共识层和执行层通过 Engine API 来进行通信，如果 Validator 拿到了出块权，就会通过 Engine API 让执行层产出新的区块，如果没有拿到出块权，就将同步到的最新区块让执行层验证和执行，从而维护最新的区块。
 
-执行层本身可以分为 5 个部分：
-
+执行层本身可以分为 6 个部分：
 - EVM：负责执行交易，交易执行也是修改状态数的唯一方式
 - State 管理：负责状态树的维护以及对实际存储的抽象
 - 交易池（Mempool）：用于用户提交的交易，暂时存储，并且会通过 P2P 网络在不同节点之间传播
 - devp2p：用于发现节点、同步交易、下载区块等等功能
 - RPC 服务：为用户提供访问节点的能力，比如用户向节点发送交易
+- BlockChain：负责管理整个以太坊的区块链数据
 
 
 ### 2024.04.16
 在 eth/backend.go 中的 Ethereum 结构是整个以太坊协议的抽象，上面说到的6 个组件都可以在这个结构中找到对应的定义：
 ```Go
 type Ethereum struct {
+  // 以太坊配置，包括链配置
 	config         *ethconfig.Config
-	// 交易池
+	// 交易池，用户的交易提交之后先到交易池
 	txPool         *txpool.TxPool
+	// 用于跟踪和管理本地交易（local transactions）
 	localTxTracker *locals.TxTracker
 	// 区块链结构
 	blockchain     *core.BlockChain
 
-  // 是 P2P 网络数据同步的核心实例
+  // 是以太坊节点的网络层核心组件，负责处理所有与其他节点的通信，包括区块同步、交易广播和接收，以及管理对等节点连接
 	handler *handler
+	// 负责节点发现和节点源管理
 	discmix *enode.FairMix
-	dropper *dropper
 
-	// 状态数据库
-	chainDb ethdb.Database // Block chain database
-
+	// 负责区块链数据的持久化存储
+	chainDb ethdb.Database
+  // 负责处理各种内部事件的发布和订阅
 	eventMux       *event.TypeMux
-	// Engine API
+	// 共识引擎
 	engine         consensus.Engine
+	// 管理用户账户和密钥
 	accountManager *accounts.Manager
 
+  // 管理日志过滤器和区块过滤器
 	filterMaps      *filtermaps.FilterMaps
+	// 用于安全关闭 filterMaps 的通道，确保在节点关闭时正确清理资源
 	closeFilterMaps chan chan struct{}
 
-  // 对外的 RPC 服务
+  // 为 RPC API 提供后端支持
 	APIBackend *EthAPIBackend
 
+  // 在 PoS 下，与共识引擎协作验证区块
 	miner    *miner.Miner
+	// 节点接受的最低gas价格
 	gasPrice *big.Int
-
+  // 网络 ID
 	networkID     uint64
+	// 提供网络相关的 RPC 服务，允许通过 RPC 查询网络状态
 	netRPCService *ethapi.NetAPI
 
-  // P2P 服务
+  // 管理P2P网络连接，处理节点发现和连接建立并提供底层网络传输功能
 	p2pServer *p2p.Server
 
+  // 保护可变字段的并发访问
 	lock sync.RWMutex 
+	// 跟踪节点是否正常关闭，在异常关闭后帮助恢复
 	shutdownTracker *shutdowncheck.ShutdownTracker 
 }
 ```
