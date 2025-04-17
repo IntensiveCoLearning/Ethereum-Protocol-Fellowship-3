@@ -1763,6 +1763,102 @@ const createLibp2pNode1 = async () => {
     * 社区治理与EIP流程: 通过公开讨论、审查与核心开发者评审，确保EIP标准透明演进。  
     * 基础设施支持: Geth、Nethermind等客户端与Infura、Alchemy节点服务，为GameFi提供稳定链上交互与高可用RPC支持。
 
+### 2025.04.17
+#### 38th-Solidity 编译后结构
+* **Standard JSON 输出**
+  * **errors**  
+    编译期间的错误、警告和提示信息。
+  * **sources**
+    包含所有源文件的结构信息。
+    * **<sourceFile.sol>**
+      * **id**  
+        源文件的唯一标识。
+      * **ast**  
+        源文件的抽象语法树。
+  * **contracts**
+    每个源文件下包含一个或多个合约的编译结果。
+    * **<sourceFile.sol>**
+      * **<ContractName>**
+        编译后的合约结构。
+        * **abi**  
+          合约的接口描述，供外部调用使用。
+        * **metadata**  
+          编译元数据的JSON字符串，包含编译器设置、源文件、ABI等。
+        * **userdoc**  
+          针对用户的文档（NatSpec）。
+        * **devdoc**  
+          针对开发者的文档（NatSpec）。
+        * **ir**  
+          中间表示（IR）代码。
+        * **irAst**  
+          中间表示的AST。
+        * **irOptimized**  
+          优化后的IR代码。
+        * **irOptimizedAst**  
+          优化后IR的AST。
+        * **storageLayout**
+          合约状态变量在存储中的分布。
+          * **storage**  
+            状态变量名称、类型与slot映射。
+          * **types**  
+            用到的所有结构类型定义。
+        * **transientStorageLayout**
+          临时存储的布局信息。
+          * **storage**
+          * **types**
+        * **evm**
+          EVM相关输出。
+          * **assembly**  
+            EVM汇编表示。
+          * **legacyAssembly**  
+            旧版的汇编输出格式。
+          * **bytecode**
+            编译后尚未部署的字节码。
+            * **functionDebugData**  
+              函数调试信息。
+            * **object**  
+              原始十六进制字节码。
+            * **opcodes**  
+              字节码对应的操作码（人类可读）。
+            * **sourceMap**  
+              源码到字节码位置的映射。
+            * **generatedSources**
+              编译期间生成的源文件（如Yul代码）。
+              * **<Yul 文件>**
+                * **ast**
+                * **contents**
+                * **id**
+                * **language**
+                * **name**
+            * **linkReferences**
+              需要外部库链接的位置。
+              * **<源文件>**
+                * **<LibraryName>**
+                  * **start**
+                  * **length**
+          * **deployedBytecode**
+            部署后合约的字节码。
+            * **object**
+            * **opcodes**
+            * **sourceMap**
+            * **linkReferences**
+            * **immutableReferences**  
+              常量位置映射。
+          * **methodIdentifiers**
+            函数签名与选择器映射。
+          * **gasEstimates**
+            Gas 估算信息。
+            * **creation**
+              创建合约的gas消耗。
+              * **codeDepositCost**
+              * **executionCost**
+              * **totalCost**
+            * **external**  
+              外部函数调用的gas估算。
+            * **internal**  
+              内部函数调用的gas估算。
+
+
 
 
 
