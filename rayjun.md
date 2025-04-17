@@ -1508,6 +1508,41 @@ type Ethereum struct {
 }
 ```
 
+### 2025.04.17
+在启动一个 geth 节点，会涉及到以下的代码：
+
+- cmd/geth/main.go：geth 节点启动入口
+- cmd/geth/config.go（makeFullNode）：加载配置，初始化节点
+    - node/node.go：初始化以太坊节点的核心容器
+        - node.rpcstack.go：初始化 RPC 模块
+        - accounts.manager.go：初始化 accountManager
+    - eth/backend.go：初始化 Ethereum 实例
+        - node/node.go OpenDatabaseWithFreezer：初始化 chaindb
+        - eth/ethconfig/config.go：初始化共识引擎实例（这里的共识引擎并不真正参与共识，只是会验证共识层的结果，以及处理 validator 的提款请求）
+        - core/blockchain.go：初始化 blockchain
+        - core/filterMaps.go：初始化 filtermaps
+        - core/txpool/blobpool/blobpool.go：初始化 blob 交易池
+        - core/txpool/legacypool/legacypool.go：初始化普通交易池
+        - cord/txpool/locals/tx_tracker.go：本地交易追踪（需要配置开启本地交易追踪，本地交易会被更高优先级处理）
+        - eth/handler.go：初始化协议的 Handler 实例
+        - miner/miner.go：实例化交易打包的模块（原挖矿模块）
+        - eth/api_backend.go：实例化 RPC 服务
+        - eth/gasprice/gasprice.go：实例化 gas 价格查询服务
+        - internal/ethapi/api.go：实例化 P2P 网络 RPC API
+        - node/node.go(RegisterAPIs)：注册 RPC API
+        - node/node.go(RegisterProtocols)：注册 p2p 的 Ptotocols
+        - node/node.go(RegisterLifecycle)：注册各个组件的生命周期
+    - cmd/utils/flags.go(RegisterFilterAPI)：注册 Filter RPC API
+    - cmd/utils/flags.go(RegisterGraphQLService)：注册 GraphQL RPC API（如果配置了的话）
+    - cmd/utils/flags.go(RegisterEthStatsService)：注册 EthStats RPC API（如果配置了的话）
+    - eth/catalyst/api.go：注册 Engine API
+
+在上面的代码中可以看到，以太坊有很多 RPC 模块，这些 RPC 模块都是使用注册的方式加入到 RPC 服务中。
+
+EVM 在每次处理交易的时候才会实例化，并不会在服务启动的时候实例化。
+
+Lifecycle 是一个接口，用于管理节点中各个组件的生命周期。它定义了组件的启动和停止行为，使节点能够有序地管理所有注册的服务。
+
 
 
 <!-- Content_END -->
