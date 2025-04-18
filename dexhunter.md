@@ -1471,6 +1471,18 @@ data structure on consensus layer
 slides [here](https://docs.google.com/presentation/d/1pp5AQ4DXmIXZ20JrI3eI9S3RyKckfhgPYqglmFXqobo/edit#slide=id.gc6f9e470d_0_0)
 
 
+# 2025.04.18
+
+consensus layer data structure
+
+## Becon State
+
+* Validator registry
+    * Pubkey, withdrawal credentials, activation epoch, etc
+* Validator balances
+* Consensus metadata
+    * Pending deposits, slot, withdrawals info
+
 
 
 <!-- Content_END -->
