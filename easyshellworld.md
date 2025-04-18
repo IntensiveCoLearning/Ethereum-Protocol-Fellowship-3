@@ -1858,6 +1858,81 @@ const createLibp2pNode1 = async () => {
             * **internal**  
               内部函数调用的gas估算。
 
+### 2025.04.18
+#### 39th-类EVM异同
+* **编译层**：Solidity → 字节码（Bytecode）
+  * Ethereum、BSC、Polygon、Avalanche C-Chain、Fantom Opera等都支持 Solidity 编译为 EVM 字节码，通常使用的编译器通常为**Solc**.
+  * **相同点**
+    * 编译器一致（solc / hardhat / foundry 等），输出相同的 EVM 字节码。
+    * ABI、合约结构、函数签名等标准完全兼容。
+    * 支持的语言特性（如 Solidity 0.8.x 的 SafeMath 内置）是一致的。
+  * **差异** “编译”阶段大致无差异，但合约部署后是否能正确执行，取决于链的 VM 实现是否完全等效于EVM。
+
+
+* **执行层**：字节码在 VM 中的执行
+   * 虽然这些链都“兼容 EVM”，但其对 EVM 的实现方式可能**不是完全一致**：
+
+| 链名 | EVM 实现 | opcode 支持 | Gas 模型差异 | 调试一致性 |
+|------|-----------|--------------|------------------|-----------------|
+| **Ethereum** | 原生 EVM（官方） | ✅ 全支持 | ✅ 基准模型 | ✅ 完整一致 |
+| **BSC** | Geth fork → 自建 VM | ✅ opcode 基本一致，但 Gas 更低 | ❗️Gas 计价更便宜，可能导致 DoS 吞吐异常 | ⚠️ 某些内置合约行为有差异 |
+| **Polygon PoS** | EVM-compatible | ✅ opcode 支持 | ⚠️ Gas 成本更低；某些链上 precompile 调用行为不同 | ⚠️ 调试中 gas 消耗与 Ethereum 不一致 |
+| **Avalanche C-Chain** | 运行 EVM on Avalanche VM | ✅ opcode 支持较全 | ⚠️ 更高 TPS 下处理更快；Gas 参数由 subnet 决定 | ⚠️ 某些 gas-intensive 合约行为差异 |
+| **Fantom Opera** | 自研 Lachesis VM + EVM runtime | ⚠️ 部分 opcode 存疑 | ⚠️ 自定义 Gas 机制、异步事件队列 | ❗️调试不完全一致，可能有执行顺序差异 |
+
+
+
+* **内置合约与 Precompiles**
+
+EVM 规定了一些内置合约（如 `0x01` ~ `0x09`），各链在此基础上可能：
+
+- 添加额外 precompiles（例如 zk-friendly 合约、跨链桥合约等）
+- 修改 gas 价格，例如：
+  - SHA256 合约在以太坊成本较高，在 BSC 可能更便宜；
+  - BSC 为提升吞吐而降低一些 precompile 的 gas 成本。
+
+这种差异虽然不会导致**合约无法部署**，但可能造成**预期性能、安全性和攻击成本**不同。
+
+
+
+* **Debug/Trace 执行差异**
+
+调试工具（如 Hardhat Trace、Tenderly、Foundry）在不同链上对执行行为的表现也可能不同：
+
+- **Ethereum**：Trace 完整准确，每个 opcode 执行细节可追踪。
+- **BSC / Fantom**：可能无法完整回放每一条指令，特别是 gas 少时。
+- **Polygon PoS**：调试稳定性强，但部分链上 tx 与 Ethereum 环境 gas 不对等。
+
+* **Gas 模型差异（影响执行与合约设计）**
+
+- Ethereum 采用最新 EIP-1559 BaseFee 模型；
+- BSC 没有 EIP-1559，仍使用老式 GasPrice 模型；
+- Polygon zkEVM 支持 EIP-1559，Polygon PoS 无；
+- Avalanche/Fantom 通常有自定义 gas 计价逻辑，可能造成交易在主网与其他链执行行为不同。
+
+例如：
+```solidity
+assembly {
+  let success := staticcall(gas(), someAddr, 0, 0, 0, 0)
+}
+```
+这段代码在不同链上的执行结果可能不同，因为 `gas()` 实际返回值不同。
+
+
+
+
+
+| 链             | 编译兼容性 | 执行兼容性（opcode, precompile） | Gas 模型 | 真正 EVM 等效？ |
+|----------------|-------------|----------------------------|------------|-----------------|
+| Ethereum       | ✅          | ✅                         | ✅         | ✅              |
+| BSC            | ✅          | ⚠️ opcode & gas 差异        | ❗️ PoSA 下不一致 | ❌              |
+| Polygon PoS    | ✅          | ⚠️ precompile 可变           | ⚠️         | ❌              |
+| Polygon zkEVM  | ✅          | ✅ 目标等效                  | ✅         | ✅（官方声称） |
+| Avalanche C‑Chain | ✅       | ⚠️ 自定义 gas 模型           | ⚠️         | ❌              |
+| Fantom Opera   | ✅          | ❗️执行行为可能不同           | ❗️         | ❌              |
+
+
+
 
 
 
