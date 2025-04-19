@@ -1932,6 +1932,40 @@ assembly {
 | Fantom Opera   | ✅          | ❗️执行行为可能不同           | ❗️         | ❌              |
 
 
+### 2025.04.19
+#### 40th-EVM Storage memory
+
+* **EVM 状态层级概览**
+  - 存储（Storage）：持久化、非易失性，保存在节点本地数据库的 Merkle Patricia Trie 中
+  - 内存（Memory）：易失性 byte 数组，交易执行时加载到内存并在结束后丢弃
+  - 堆栈（Stack）：最多 1024 个 256-bit 元素，用于指令运算
+
+* **Storage 存储模型**
+  - 采用 key-value 结构：`key = keccak256(slot)`，`value` 为 32 字节
+  - 每个合约维护独立的 Storage Trie，其根哈希通过区块头 `stateRoot` 链接到全局状态树
+  - Storage 保存在节点本地 LevelDB/RocksDB 数据库，区块只存 `stateRoot` 摘要
+
+* **Memory 内存模型**
+  - 简单字节数组，可从任意偏移读写，大小按需扩展
+  - 扩容 gas 成本由多项式函数计算，超过 704 字节后成本陡增
+  - 交易执行结束后自动清空，不影响持久状态
+
+* **EIP 标准演进**
+  - EIP-150：引入 63/64 规则，在跨合约调用时保留调用者 gas，防止 DoS 攻击
+  - EIP-1884：重定价 trie 大小依赖的 opcodes（BALANCE、SLOAD 等），平衡 gas 消耗与资源开销
+  - EIP-2200：净 gas 计量（net gas metering）变更，结构化定义 SSTORE 费用，减少过高 gas 成本
+  - EIP-2929：首次访问冷状态插槽时增加 SLOAD、CALL 等费用，保护节点免受状态访问 DoS 攻击
+  - EIP-1967：标准化代理合约存储插槽，统一逻辑合约地址、管理员地址等信息位置
+
+* **与区块和链的关系**
+  - 区块头 `stateRoot` 字段存储全局状态树根哈希，用于验证和共识
+  - 新区块执行交易后，节点更新本地状态数据库并计算新的 `stateRoot`，形成链式演变
+  - 轻节点通过 `stateRoot` 与 Merkle 路径验证单个存储值，无需全量状态数据
+
+* **演变与实践**
+  - Yellow Paper 首次定义了存储、内存、堆栈三大区域及其 gas 模型
+  - 随着网络规模和安全需求，EIPs 不断优化 gas 定价与存储访问，提升性能与抗攻击能力
+  - 开发者应关注各版本 EIP 对合约设计的影响，如存储插槽冲突、代理模式、安全访问控制等
 
 
 
