@@ -1934,7 +1934,6 @@ assembly {
 
 ### 2025.04.19
 #### 40th-EVM Storage memory
-
 * **EVM 状态层级概览**
   - 存储（Storage）：持久化、非易失性，保存在节点本地数据库的 Merkle Patricia Trie 中
   - 内存（Memory）：易失性 byte 数组，交易执行时加载到内存并在结束后丢弃
