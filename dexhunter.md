@@ -1484,5 +1484,16 @@ consensus layer data structure
     * Pending deposits, slot, withdrawals info
 
 
+# 2025.04.19
+
+
+Execution layer data structure - the Merkle Patricia Tree.
+
+[docs](https://docs.google.com/presentation/d/1YJbrZpgxjTHy7QlgXFRG5OjSK-G5uPrExBPu3Hiefvk/edit)
+
+* Ethereum’s Patricia Merkle Trie is a combination of a Merkle Tree and a Patricia trie
+
+Learn more about hyperledger besu project
+
 
 <!-- Content_END -->
