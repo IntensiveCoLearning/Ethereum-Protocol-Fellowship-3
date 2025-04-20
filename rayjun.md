@@ -1454,7 +1454,7 @@ execute 就是执行具体指令的逻辑，具体的指令都在 core/vm/instru
 - BlockChain：负责管理整个以太坊的区块链数据
 
 
-### 2024.04.16
+### 2025.04.16
 在 eth/backend.go 中的 Ethereum 结构是整个以太坊协议的抽象，上面说到的6 个组件都可以在这个结构中找到对应的定义：
 ```Go
 type Ethereum struct {
