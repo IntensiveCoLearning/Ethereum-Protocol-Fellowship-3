@@ -1495,5 +1495,27 @@ Execution layer data structure - the Merkle Patricia Tree.
 
 Learn more about hyperledger besu project
 
+# 2025.04.20
+
+next upgrade Pectra
+
+[source](https://epf.wiki/#/eps/day24)
+
+main features:
+* EOA account code
+* Increase the max effective balance
+* Blob throughput increase
+* Increase calldata cost
+* Execution layer triggerable exits
+* Validator deposits on chain
+* Precompile for BLS12-381
+* Serve historical block hashes from state
+* Move committee index outside Attestation
+* Add blob schedule to EL config files
+
+
+more to read [here](https://ethereum.org/en/roadmap/pectra/)
+
+
 
 <!-- Content_END -->
