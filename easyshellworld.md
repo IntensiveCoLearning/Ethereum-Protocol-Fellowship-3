@@ -1967,6 +1967,64 @@ assembly {
   - 开发者应关注各版本 EIP 对合约设计的影响，如存储插槽冲突、代理模式、安全访问控制等
 
 
+### 2025.04.20
+#### 41th-各链address兼容与转换
+* **address兼容性问题**
+  * **地址编码格式**：比如 Base58（Bitcoin、Solana）、Bech32（Cosmos、Bitcoin SegWit）、Hex（以太坊）。
+  * **公钥哈希算法**：不同链对公钥的哈希方式不同，如 sha256 + ripemd160（比特币） vs keccak256（以太坊）。
+  * **前缀标识（版本字节）**：用于标识地址类型和所属链，例如比特币地址以 1 或 3 开头，以太坊地址以 0x 开头。
+  * **签名算法（曲线）**：如 ECDSA（secp256k1），Ed25519，BLS 等。签名算法不兼容时地址基本无法转换。
+* **各主流链的地址格式**
+
+| 链          | 签名算法          | 地址格式             | 说明                                |
+|-------------|-------------------|----------------------|-------------------------------------|
+| Bitcoin     | ECDSA/secp256k1   | Base58Check          | P2PKH/P2SH/Bech32 支持              |
+| Ethereum    | ECDSA/secp256k1   | Hex（0x前缀）        | keccak256(publicKey)[12:]          |
+| Solana      | Ed25519           | Base58               | 公钥直接编码                        |
+| Tron        | ECDSA/secp256k1   | Base58Check          | 与 ETH 结构相似，前缀不同          |
+| Cosmos系链  | ECDSA/secp256k1   | Bech32（如 cosmos1...） | 公钥哈希后编码                   |
+| Polkadot    | sr25519/ed25519   | Base58 + SS58        | 有链特定前缀（network ID）         |
+| Aptos/Sui   | Ed25519           | Hex（无前缀）        | 公钥哈希或直接取前几位             |
+
+* **常见的地址转换与映射方式**
+
+  - **Tron <-> Ethereum**
+
+    - Tron 地址其实和 Ethereum 结构上是兼容的，只是前缀不同：
+      - ETH 地址：`0x` + `keccak256(pubkey)[12:]`
+      - TRON 地址：Base58Check(`0x41` + ETH地址后20字节)
+
+    - 转换方式（代码示例）：
+
+      ```ts
+      // ETH => Tron
+      function ethToTronAddress(ethAddress: string): string {
+        const hex = ethAddress.replace(/^0x/, '');
+        const tronHex = '41' + hex;
+        const bytes = Buffer.from(tronHex, 'hex');
+        const hash = sha256(sha256(bytes));
+        const checksum = hash.slice(0, 4);
+        const base58 = base58Encode(Buffer.concat([bytes, checksum]));
+        return base58;
+      }
+      ```
+
+    - 注意：Tron 默认地址前缀是 `41`，Base58Check 编码后才变成以 `T` 开头的地址。
+
+  - **Cosmos / Polkadot 系链（Bech32 / SS58）**
+
+    - 这类链支持多前缀，地址转换时要重新编码：
+      - Cosmos 使用 Bech32（如 `cosmos1...`，`osmo1...`）
+      - Polkadot 使用 SS58（带不同链的网络 ID）
+
+    - 常用工具：
+      - Cosmos：使用 `bech32` 库（如 `bech32.encode(prefix, words)`）
+      - Polkadot：使用 `@polkadot/util-crypto` 的 `encodeAddress(pubkey, prefix)`
+
+
+
+
+
 
 
 
