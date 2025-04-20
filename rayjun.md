@@ -1576,4 +1576,7 @@ EVM 是以太坊这个状态机的状态转换函数，所有状态数据的更�
 ![image](https://github.com/user-attachments/assets/0e3d23a1-4b68-4ff9-93ae-d191e601f1ef)
 
 
+### 2025.04.20
+geth 研究 pod 成立，第一篇文章产出中：https://www.notion.so/lxdao/Geth-Geth-1d8dceffe40b81e9bbf0db5d26d3b701
+
 <!-- Content_END -->
